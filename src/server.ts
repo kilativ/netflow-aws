@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import moment from 'moment';
@@ -38,7 +39,8 @@ let client = new plaid.Client({
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
-app.use(express.static(path.resolve(__dirname)))
+app.use(cors());
+app.use(express.static(path.resolve(__dirname)));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({
