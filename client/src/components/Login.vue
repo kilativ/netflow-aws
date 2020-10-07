@@ -8,6 +8,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import axios, { AxiosResponse } from 'axios';
+import { LinkToken } from '../models/LinkToken';
+
+axios.defaults.baseURL='http://localhost:3000';
 
 export default defineComponent({
   name: 'Login',
@@ -16,11 +19,11 @@ export default defineComponent({
   },
   data() {
     return {
-      linkToken: ''
+      linkToken: new LinkToken
     }
   },
   async mounted() {
-    const response = await axios.post('http://localhost:3000/api/create_link_token', {})
+    const response = await axios.post<LinkToken>('/api/create_link_token', {})
     this.linkToken = response.data;
   }
 });
