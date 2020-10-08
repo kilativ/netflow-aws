@@ -1,0 +1,22 @@
+{
+  "name": "netflow",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "npm run build-server && npm run build-client && npm run build-deploy",
+    "build-client": "cd client && npm install && npm run build",
+    "build-server": "cd server && npm install && npm run build",
+    "build-deploy": "node build.js",
+    "serve": "cd build && node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vvvtech/netflow.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vvvtech/netflow/issues"
+  },
+  "homepage": "https://github.com/vvvtech/netflow#readme",
+  "devDependencies": {
+    "shelljs": "^0.8.4"
+  }
+}

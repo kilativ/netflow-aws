@@ -28,5 +28,5 @@ module.exports = {
       }
     ]
   },
-  externals: [ nodeExternals() ]
+  //externals: [ nodeExternals() ]
 }

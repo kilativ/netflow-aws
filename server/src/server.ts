@@ -47,6 +47,10 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json())
 
 app.get('/', (req, res, next) => {
+  res.sendFile('./index.html', { root: __dirname });
+})
+
+app.get('/quickstart', (req, res, next) => {
   res.sendFile('./views/plaid.html', { root: __dirname });
 })
 
