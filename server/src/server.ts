@@ -41,16 +41,13 @@ const app = express();
 app.set('port', process.env.PORT || 3000);
 app.use(cors());
 app.use(express.static(path.resolve(__dirname)));
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs')
 app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(bodyParser.json())
 
 app.get('/', (req, res, next) => {
-  res.render('plaid.ejs', {
-  })
+  res.sendFile('./views/plaid.html', { root: __dirname });
 })
 
 // This is an endpoint defined for the OAuth flow to redirect to.
