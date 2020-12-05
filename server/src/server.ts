@@ -6,6 +6,10 @@ import moment from 'moment';
 import path from 'path';
 import plaid from 'plaid';
 import util from 'util';
+import passport from 'passport';
+import ensureLoggedIn from 'connect-ensure-login';
+import session from 'express-session';
+
 
 dotenv.config();
 
@@ -15,6 +19,9 @@ let PLAID_ENV = process.env.PLAID_ENV;
 let PLAID_PRODUCTS = process.env.PLAID_PRODUCTS.split(',');
 let PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES.split(',');
 let PLAID_REDIRECT_URI = process.env.PLAID_REDIRECT_URI;
+
+let GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+let GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 // We store the access_token in memory - in production, store it in a secure
 // persistent data store
@@ -37,6 +44,27 @@ let client = new plaid.Client({
   }
 });
 
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+    clientID: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  function(accessToken: any, refreshToken: any, profile: any, cb: any) {
+    return cb(null, profile);
+  }
+));
+
+passport.serializeUser(function(user, done) {
+  done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+  done(null, user);
+});
+
+
 const app = express();
 app.set('port', process.env.PORT || 3000);
 app.use(cors());
@@ -44,6 +72,9 @@ app.use(express.static(path.resolve(__dirname)));
 app.use(bodyParser.urlencoded({
   extended: false
 }))
+app.use(session({secret: '4101b528-66a7-4e9a-8241-48a7c9ff5bd7'}));    
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(bodyParser.json())
 
 app.get('/', (req, res, next) => {
@@ -53,8 +84,20 @@ app.get('/', (req, res, next) => {
 app.get('/quickstart', (req, res, next) => {
   res.sendFile('./views/plaid.html', { root: __dirname });
 })
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile'] }));
 
-// This is an endpoint defined for the OAuth flow to redirect to.
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    res.redirect('/account');
+  });
+
+app.get('/account', ensureLoggedIn.ensureLoggedIn('/auth/google'),
+  function(req, res) { 
+    res.send(req.user) 
+  });
+
 app.get('/oauth-response.html', function (request, response, next) {
   response.sendFile('./views/oauth-response.html', { root: __dirname });
 });
