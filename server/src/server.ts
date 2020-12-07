@@ -9,6 +9,7 @@ import util from 'util';
 import passport from 'passport';
 import ensureLoggedIn from 'connect-ensure-login';
 import session from 'express-session';
+import { AccountDal, UserAccount } from './dal/account';
 
 
 dotenv.config();
@@ -56,8 +57,13 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-passport.serializeUser(function(user, done) {
-  done(null, user);
+passport.serializeUser(function(user: any, done) {
+  if (user.provider === 'google') {
+    let netflowUser: UserAccount = {userId: user.emails[0].value, google: user};
+
+    done(null, netflowUser); // store the whole user
+  }
+  done(null, user); // store the whole user
 });
 
 passport.deserializeUser(function(user, done) {
@@ -85,17 +91,21 @@ app.get('/quickstart', (req, res, next) => {
   res.sendFile('./views/plaid.html', { root: __dirname });
 })
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile'] }));
+  passport.authenticate('google', { scope: ['profile','email'] }));
 
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
+    let netflowUser: UserAccount = {userId: req.user.emails[0].value, google: req.user};
+
+    new AccountDal().update(netflowUser);
+
     res.redirect('/account');
   });
 
 app.get('/account', ensureLoggedIn.ensureLoggedIn('/auth/google'),
   function(req, res) { 
-    res.send(req.user) 
+    res.send(req.user)
   });
 
 app.get('/oauth-response.html', function (request, response, next) {
