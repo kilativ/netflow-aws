@@ -9,7 +9,8 @@ import util from 'util';
 import passport from 'passport';
 import ensureLoggedIn from 'connect-ensure-login';
 import session from 'express-session';
-import { AccountDal, UserAccount } from './dal/account';
+import { AccountDal } from './dal/account';
+import { NetFlowUser } from '../../shared/models/account-dto';
 
 
 dotenv.config();
@@ -59,14 +60,15 @@ passport.use(new GoogleStrategy({
 
 passport.serializeUser(function(user: any, done) {
   if (user.provider === 'google') {
-    let netflowUser: UserAccount = {userId: user.emails[0].value, google: user};
-
-    done(null, netflowUser); // store the whole user
+    // let netflowUser: NetFlowUser = {userId: user.emails[0].value, googleUser: user};
+    console.log("SERIALIZER CALED!!!!!!!!!!!!!!!!!!!");
+    done(null, user); // store the whole user
   }
   done(null, user); // store the whole user
 });
 
 passport.deserializeUser(function(user, done) {
+  console.log("HELLLLO");
   done(null, user);
 });
 
@@ -96,9 +98,13 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   function(req, res) {
-    let netflowUser: UserAccount = {userId: req.user.emails[0].value, google: req.user};
+    console.log("google callback");
+    console.log(req.user);
+    
 
-    new AccountDal().update(netflowUser);
+    // let netflowUser: UserAccount = {userId: req.user.emails[0].value, google: req.user};
+
+    // new AccountDal().update(netflowUser);
 
     res.redirect('/account');
   });

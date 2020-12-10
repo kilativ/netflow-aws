@@ -10,7 +10,7 @@
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
-    "watch": "npm run build-ts && npm run watch-all",
+    "watch": "npm run build-ts && npm run copy-assets && npm run watch-all",
     "watch-all": "concurrently -k -p \"[{name}]\" -n \"TSC,Assets,Node\" -c \"cyan.bold,yellow.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-assets\" \"npm run watch-node\"",
     "watch-assets": "nodemon --watch src/views -e html,css --exec npm run copy-assets",
     "watch-node": "nodemon dist/server.js",

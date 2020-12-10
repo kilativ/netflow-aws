@@ -1,13 +1,10 @@
 const AWS = require('aws-sdk'); 
-
-AWS.config.update({
-    region: "us-east-1"
-  });
+import {NetFlowUser} from '../../../shared/models/account-dto'
 
 export class AccountDal {
     private dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-    update(account: UserAccount) {
+    update(account: NetFlowUser) {
   
         console.log(account);
         const params = {
@@ -25,7 +22,3 @@ export class AccountDal {
     }
 }
 
-export class UserAccount {
-    public userId: string;
-    public google: object;
-}
