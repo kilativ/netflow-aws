@@ -2,7 +2,6 @@ import express from 'express';
 import passport from 'passport';
 import { NetFlowUser } from '../../shared/models/account-dto';
 
-// auth related routes
 export class AuthRoutes {
 
   public static Add(app: express.Express) {
