@@ -9,7 +9,6 @@ import session from 'express-session';
 import { AuthRoutes } from './server-auth'
 import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account';
-import { NetFlowUser } from '../../shared/models/account-dto';
 
 dotenv.config();
 
@@ -35,7 +34,7 @@ app.get('/', (req, res) => {
 app.get('/user', ensureLoggedIn.ensureLoggedIn('/auth/google'),
   function (req, res) {
     new AccountDal()
-    .get((req.user as NetFlowUser).userId)
+    .get(req.user as string)
     .then(data=>res.send(data))
-    .catch(err=>console.log(err));
+    .catch(err=>res.status(500).json(err));
 });

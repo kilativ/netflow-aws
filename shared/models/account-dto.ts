@@ -1,6 +1,4 @@
 export class NetFlowUser {
-
-    
     userId: string;
     googleUser: GoogleUser;
     accounts: Account[];
@@ -31,14 +29,5 @@ export interface GoogleName {
 
 export interface Value {
     value: string;
-}
-
-export interface Google {
-    emails: GoogleEmail[];
-    provider: string;
-    displayName: string;
-    name: GoogleName;
-    id: string;
-    photos: Value[];
 }
 

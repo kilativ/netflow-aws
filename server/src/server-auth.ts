@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { NetFlowUser } from '../../shared/models/account-dto';
+import { GoogleUser, NetFlowUser } from '../../shared/models/account-dto';
 
 export class AuthRoutes {
 
@@ -23,15 +23,13 @@ export class AuthRoutes {
 
     passport.serializeUser(function (user: any, done) {
       if (user.provider === 'google') {
-        let netflowUser: NetFlowUser = user;
-
-        done(null, netflowUser); // store the whole user
+        const googleUser = user as GoogleUser;
+        done(null, googleUser.emails[0].value); // store the whole user
       }
       done(null, user); // store the whole user
     });
 
     passport.deserializeUser(function (user, done) {
-      console.log("HELLLOOOOOOOOOOOOOOOOOOOOOOOOOOO");
       done(null, user);
     });
 
@@ -44,8 +42,14 @@ export class AuthRoutes {
       function (req, res) {
         // create user if new
         // update/merge 'google' node if existing
-        // new AccountDal().update(req.user as NetFlowUser);
-        console.log(req);
+
+        // const googleUser = req.user as GoogleUser;
+        // let netflowUser = new NetFlowUser();
+        // netflowUser.userId = googleUser.emails[0].value;
+        // netflowUser.googleUser = googleUser;
+
+
+        // new AccountDal().update(req.user);
         res.redirect('/user');
       });
 
