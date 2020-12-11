@@ -8,6 +8,8 @@ import ensureLoggedIn from 'connect-ensure-login';
 import session from 'express-session';
 import { AuthRoutes } from './server-auth'
 import { PlaidRoutes } from './server-plaid';
+import { AccountDal } from './dal/account';
+import { NetFlowUser } from '../../shared/models/account-dto';
 
 dotenv.config();
 
@@ -30,7 +32,10 @@ app.get('/', (req, res) => {
   res.sendFile('./index.html', { root: __dirname });
 })
 
-app.get('/account', ensureLoggedIn.ensureLoggedIn('/auth/google'),
+app.get('/user', ensureLoggedIn.ensureLoggedIn('/auth/google'),
   function (req, res) {
-    res.send(req.user)
-  });
+    new AccountDal()
+    .get((req.user as NetFlowUser).userId)
+    .then(data=>res.send(data))
+    .catch(err=>console.log(err));
+});

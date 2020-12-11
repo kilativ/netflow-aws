@@ -42,6 +42,8 @@ export class AuthRoutes {
     app.get('/auth/google/callback',
       passport.authenticate('google', { failureRedirect: '/login' }),
       function (req, res) {
+        // create user if new
+        // update/merge 'google' node if existing
         // new AccountDal().update(req.user as NetFlowUser);
         console.log(req);
         res.redirect('/user');
