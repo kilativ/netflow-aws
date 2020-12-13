@@ -1,47 +1,11 @@
 <template>
-  <div>
-    <plaid-link
-      env="sandbox"
-      clientName="Netflow"
-      product="transactions"
-      @success="onSuccess"
-    >
-    </plaid-link>
-    public token: {{ publicToken }}
-    <br/>
-    access token: {{ accessToken }}
-    <br/>
-    item id: {{ itemId }}
+  <div id="nav">
+    <router-link to="/">Home</router-link> |
+    <router-link to="/plaid">Plaid</router-link> |
+    <router-link to="/about">About</router-link>
   </div>
+  <router-view/>
 </template>
-
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-import axios, { AxiosResponse } from "axios";
-import PlaidLink from './components/PlaidLink.vue';
-
-@Options({
-  components: {
-    PlaidLink,
-  },
-})
-export default class App extends Vue {
-
-  publicToken = '';
-  accessToken = '';
-  itemId = '';
-
-  async onSuccess(token: string) {
-    this.publicToken = token;
-    const tokenResponse = await axios.post('/api/set_access_token',
-    {
-      public_token: this.publicToken
-    });
-    this.accessToken = tokenResponse.data.access_token;
-    this.itemId = tokenResponse.data.item_id;
-  }
-}
-</script>
 
 <style lang="scss">
 #app {
@@ -50,6 +14,18 @@ export default class App extends Vue {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  padding: 30px;
+
+  a {
+    font-weight: bold;
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      color: #42b983;
+    }
+  }
 }
 </style>
