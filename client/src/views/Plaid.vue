@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
 import axios, { AxiosResponse } from "axios";
-import PlaidLink from '../components/PlaidLink.vue';
+import PlaidLink from '../views/PlaidLink.vue';
 
 @Options({
   components: {

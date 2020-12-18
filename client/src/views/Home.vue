@@ -7,7 +7,7 @@
 
 <script>
 // @ is an alias to /src
-import PlaidLink from '@/components/PlaidLink.vue'
+import PlaidLink from '@/views/PlaidLink.vue'
 
 export default {
   name: 'Home',
