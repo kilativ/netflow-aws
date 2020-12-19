@@ -1,7 +1,9 @@
+import {Account} from 'plaid';
+
 export class NetFlowUser {
     userId!: string;
     googleUser!: GoogleUser;
-    accounts!: NetFlowPlaidBankAccount[];
+    banks!: NetFlowPlaidBankLink[];
 }
 
 export class GoogleUser {
@@ -10,12 +12,12 @@ export class GoogleUser {
     emails: GoogleEmail[] = [];
 }
 
-export class NetFlowPlaidBankAccount {
+export class NetFlowPlaidBankLink {
     id!: string;
     nickname!: string;
     token!: string;
     active!: boolean;
-    plaidAccountId!: string;
+    accounts: Account[];
 }
 
 export interface GoogleEmail {

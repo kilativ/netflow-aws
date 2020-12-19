@@ -19,21 +19,21 @@ export class Transactions {
         }
       });
     async saveToDb() {
-        // read all accounts from the dynamodb
-        const netFlowUsers = await new AccountDal().getAll();
+        const accountDal = new AccountDal();
+        const netFlowUsers = await accountDal.getAll();
 
-        // for each account 
         const transactionDal = new TransactionDal()
         netFlowUsers.forEach(async user => 
-            user.accounts.forEach(async acct => {
-                const txns = await this.fetchTransactions(acct.token); // why does respons contains accounts as well? and more than one?
-                console.log(txns);
-                txns.transactions.forEach(txn=>transactionDal.update(txn))
+            user.banks.forEach(async bank => {
+                const txnsAndAccounts = await this.fetchTransactions(bank.token); 
+
+                txnsAndAccounts.transactions.forEach(txn=>transactionDal.update(txn));
+
+                const accounts = txnsAndAccounts.accounts;
+                accountDal.updateBankAccounts(user.userId, bank.id, accounts);
             })
         )
 
-            // fetch transactions
-            // fetch balances
     }
 
     // todo moved to PLAID specific file
@@ -74,10 +74,4 @@ export class Transactions {
 }
 
 dotenv.config();
-
 new Transactions().saveToDb();
-
-// axios.get('https://httpbin.org/ip')
-//     .then((response) => {
-//         console.log(`Your IP is ${response.data.origin}`)
-//     })
