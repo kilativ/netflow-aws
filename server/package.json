@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run webpack && npm run copy-assets",
     "build-ts": "tsc",
+    "run-jobs": "ts-node-transpile-only ./src/jobs.ts",
     "copy-assets": "ts-node copyAssets.ts",
     "serve": "node dist/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",

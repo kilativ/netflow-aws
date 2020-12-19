@@ -1,20 +1,20 @@
 export class NetFlowUser {
-    userId: string;
-    googleUser: GoogleUser;
-    accounts: Account[];
+    userId!: string;
+    googleUser!: GoogleUser;
+    accounts!: NetFlowAccount[];
 }
 
 export class GoogleUser {
-    id: string;
-    displayName: string;
-    emails: GoogleEmail[];
+    id!: string;
+    displayName!: string;
+    emails: GoogleEmail[] = [];
 }
 
-export class Account {
-    id: string;
-    nickname: string;
-    token: string;
-    active: boolean;
+export class NetFlowAccount {
+    id!: string;
+    nickname!: string;
+    token!: string;
+    active: boolean = false;
 }
 
 export interface GoogleEmail {

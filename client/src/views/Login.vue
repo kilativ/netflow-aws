@@ -1,13 +1,13 @@
 <template>
 <div>
-  <!-- <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
+  <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
   <h1>IsAuthorized: {{ Vue3GoogleOauth.isAuthorized }}</h1>
   access token {{}}
-  <h2 v-if="user">signed user: {{user}}</h2> -->
+  <h2 v-if="user">signed user: {{user}}</h2>
   <button @click="test">Test</button>
-  <!-- <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized">sign in</button>
+  <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized">sign in</button>
   <button @click="handleClickGetAuthCode" :disabled="!Vue3GoogleOauth.isInit">get authCode</button>
-  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized">sign out</button> -->
+  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized">sign out</button> 
 </div>
 </template>
 
@@ -80,11 +80,11 @@ export default {
   },
   setup(props) {
     // const { isSignIn } = toRefs(props);
-    // const Vue3GoogleOauth = inject("Vue3GoogleOauth");
+    const Vue3GoogleOauth = inject("Vue3GoogleOauth");
 
     // const handleClickLogin = () => {};
     return {
-      //  Vue3GoogleOauth,
+       Vue3GoogleOauth,
       //  handleClickLogin,
     //   isSignIn,
      };
