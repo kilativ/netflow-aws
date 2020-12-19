@@ -19,6 +19,22 @@ export class AccountDal {
     });
   }
 
+  getAll(): Promise<NetFlowUser[]> {
+    return new Promise((resolve, reject) => {
+      const params = {
+        TableName: process.env.DYNAMODB_TABLE,
+      };
+
+      this.dynamoDb.scan(params, function (err: any, data: any) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data.Items);
+        }
+      });
+    })
+  }
+
   get(userId: string) {
     return new Promise((resolve, reject) => {
       const params = {

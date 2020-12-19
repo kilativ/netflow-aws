@@ -1,7 +1,7 @@
 export class NetFlowUser {
     userId!: string;
     googleUser!: GoogleUser;
-    accounts!: NetFlowAccount[];
+    accounts!: NetFlowPlaidBankAccount[];
 }
 
 export class GoogleUser {
@@ -10,7 +10,7 @@ export class GoogleUser {
     emails: GoogleEmail[] = [];
 }
 
-export class NetFlowAccount {
+export class NetFlowPlaidBankAccount {
     id!: string;
     nickname!: string;
     token!: string;

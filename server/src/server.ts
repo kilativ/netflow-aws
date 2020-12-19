@@ -5,7 +5,7 @@ import express from 'express';
 import path from 'path';
 import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
-import { AccountDal } from './dal/account';
+import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
 
 dotenv.config();

@@ -6,6 +6,7 @@
     "build-client": "cd client && npm install && npm run build",
     "build-server": "cd server && npm install && npm run build",
     "build-deploy": "node build.js",
+    "run-jobs": "cd server && npm run run-jobs",
     "serve": "cd build && node server.js"
   },
   "repository": {

@@ -14,10 +14,10 @@ import { Vue } from "vue-class-component";
 import { Component } from "vue-property-decorator";
 import { AccountService } from "../services/account";
 import gAuthPlugin from "vue3-google-oauth2";
-import {NetFlowAccount} from "../../../shared/models/account-dto"
+import {NetFlowPlaidBankAccount, NetFlowUser} from "../../../shared/models/account-dto"
 
 export default class AccountView extends Vue {
-  private list : NetFlowAccount[] = [];
+  private list : NetFlowPlaidBankAccount[] = [];
 
   private $gAuth: any;
 
