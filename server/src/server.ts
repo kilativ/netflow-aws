@@ -4,11 +4,13 @@ import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
 import passport from 'passport';
-import ensureLoggedIn from 'connect-ensure-login';
 import session from 'express-session';
 import { AuthRoutes } from './server-auth'
 import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account';
+import  {GoogleAuth, OAuth2Client } from 'google-auth-library';
+import { google } from 'googleapis';
+
 
 dotenv.config();
 
@@ -31,10 +33,41 @@ app.get('/', (req, res) => {
   res.sendFile('./index.html', { root: __dirname });
 })
 
-app.get('/user', ensureLoggedIn.ensureLoggedIn('/auth/google'),
+const validateUser = function (req: any, res: any, next: any) {
+  console.log('headers:', req.headers);
+  console.log('headers:', req.headers["authorization"]);
+
+
+  let token = req.headers["authorization"] as string;
+  token = token.substr(7);
+  
+  var OAuth2 = google.auth.OAuth2;
+  var oauth2Client = new OAuth2();
+  oauth2Client.setCredentials({access_token: token});
+var oauth2 = google.oauth2({
+  auth: oauth2Client,
+  version: 'v2'
+});
+oauth2.userinfo.get(
+  function(err, res) {
+    if (err) {
+       console.log(err);
+    } else {
+       console.log(res);
+    }
+});
+
+
+
+  
+  next()
+};
+
+app.get('/user'
+  , validateUser,
   function (req, res) {
     new AccountDal()
-    .get(req.user as string)
-    .then(data=>res.send(data))
-    .catch(err=>res.status(500).json(err));
-});
+      .get('kilativ@gmail.com' as string)
+      .then(data => res.send(data))
+      .catch(err => res.status(500).json(err));
+  });

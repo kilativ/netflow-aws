@@ -7,7 +7,7 @@ export class AccountService {
 
 
 
-    async getAccount() {
+    async getAccount(accessToken: string) {
         axios.interceptors.response.use(res => {
             return res;
         }, function (error) {
@@ -15,7 +15,12 @@ export class AccountService {
             console.log(error)
             // router.replace(response)
         })
-        const response = axios.get("/user", {}).then(data=>console.log(data)).catch(error => console.error(error)); // todo move to /api/user
+        // // const user = this.$gAuth.instance.currentUser.get();
+        // console.log(user.getAuthResponse().token_type);
+        // console.log(user.getAuthResponse().access_token);
+        const response = axios.get("/user", {headers: {
+            'Authorization': `Bearer ${accessToken}`
+            }}).then(data=>console.log(data)).catch(error => console.error(error)); // todo move to /api/user
         return response;
     }
 

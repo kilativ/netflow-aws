@@ -8,6 +8,8 @@ import axios, { AxiosResponse } from "axios";
 import { Vue } from "vue-class-component";
 import { Component } from "vue-property-decorator";
 import { AccountService } from "../services/account";
+import gAuthPlugin from 'vue3-google-oauth2';
+
 
 export default class Account extends Vue {
 private list: Array<object> = [
@@ -20,9 +22,12 @@ private list: Array<object> = [
       age: '30'
     }
   ]
+
+private $gAuth: any;
+
 mounted() {
    console.log('mounted');
-   const response = new AccountService().getAccount();
+   const response = new AccountService().getAccount(this.$gAuth.instance.currentUser.get().getAuthResponse().access_token);
   }
 }
 </script>

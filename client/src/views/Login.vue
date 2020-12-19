@@ -1,12 +1,13 @@
 <template>
 <div>
-  <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
+  <!-- <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
   <h1>IsAuthorized: {{ Vue3GoogleOauth.isAuthorized }}</h1>
-  <h2 v-if="user">signed user: {{user}}</h2>
-  <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized">sign in</button>
+  access token {{}}
+  <h2 v-if="user">signed user: {{user}}</h2> -->
+  <button @click="test">Test</button>
+  <!-- <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized">sign in</button>
   <button @click="handleClickGetAuthCode" :disabled="!Vue3GoogleOauth.isInit">get authCode</button>
-  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized">sign out</button>
-  <button @click="handleClickDisconnect" :disabled="!Vue3GoogleOauth.isAuthorized">disconnect</button>
+  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized">sign out</button> -->
 </div>
 </template>
 
@@ -14,7 +15,7 @@
 import { inject, toRefs } from "vue";
 
 export default {
-  name: "HelloWorld",
+  name: "Login",
   props: {
     msg: String,
   },
@@ -26,6 +27,13 @@ export default {
   },
 
   methods: {
+    test() {
+      const user = this.$gAuth.instance.currentUser.get();
+      console.log(user.getAuthResponse().token_type);
+      console.log(user.getAuthResponse().access_token);
+    },
+
+
     async handleClickSignIn(){
       try {
         const googleUser = await this.$gAuth.signIn();
@@ -68,22 +76,18 @@ export default {
       } catch (error) {
         console.error(error);
       }
-    },
-
-    handleClickDisconnect() {
-      window.location.href = `https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?continue=${window.location.href}`;
-    },
+    }
   },
   setup(props) {
-    const { isSignIn } = toRefs(props);
-    const Vue3GoogleOauth = inject("Vue3GoogleOauth");
+    // const { isSignIn } = toRefs(props);
+    // const Vue3GoogleOauth = inject("Vue3GoogleOauth");
 
-    const handleClickLogin = () => {};
+    // const handleClickLogin = () => {};
     return {
-      Vue3GoogleOauth,
-      handleClickLogin,
-      isSignIn,
-    };
+      //  Vue3GoogleOauth,
+      //  handleClickLogin,
+    //   isSignIn,
+     };
   },
 };
 </script>
