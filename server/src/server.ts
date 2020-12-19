@@ -8,7 +8,6 @@ import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account';
 import { google } from 'googleapis';
 
-
 dotenv.config();
 
 const app = express();
@@ -27,13 +26,9 @@ app.get('/', (req, res) => {
   res.sendFile('./index.html', { root: __dirname });
 })
 
-const validateUser = function (req: any, res: any, next: any) {
-  console.log('headers:', req.headers);
-  console.log('headers:', req.headers["authorization"]);
-
-
+const validateUser = async function (req: any, res: any, next: any) {
   let token = req.headers["authorization"] as string;
-  token = token.substr(7);
+  token = token.substr(7); // bearer 
 
   var OAuth2 = google.auth.OAuth2;
   var oauth2Client = new OAuth2();
@@ -43,25 +38,24 @@ const validateUser = function (req: any, res: any, next: any) {
     version: 'v2'
   });
   oauth2.userinfo.get(
-    function (err, res) {
+    function (err, googlResponse) {
       if (err) {
         console.log(err);
+        res.status(401).json("not authorized");
       } else {
         console.log(res);
+        req.user = googlResponse.data;
+        next();
       }
     });
-
-
-
-
-  next()
 };
 
 app.get('/user'
   , validateUser,
-  function (req, res) {
+  function (req: any, res) {
+    console.log(req);
     new AccountDal()
-      .get('kilativ@gmail.com' as string)
+      .get(req.user.email as string)
       .then(data => res.send(data))
       .catch(err => res.status(500).json(err));
   });

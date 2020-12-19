@@ -32,7 +32,7 @@ export class AccountDal {
         if (err) {
           reject(err);
         } else {
-          resolve(data);
+          resolve(data.Item);
         }
       });
     })
