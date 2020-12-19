@@ -7,7 +7,7 @@ export class AccountDal {
   update(account: NetFlowUser) {
     // todo convert to promise
     const params = {
-      TableName: process.env.DYNAMODB_TABLE,
+      TableName: process.env.ACCT_DYNAMODB_TABLE,
       Item: account
     };
 
@@ -22,7 +22,7 @@ export class AccountDal {
   getAll(): Promise<NetFlowUser[]> {
     return new Promise((resolve, reject) => {
       const params = {
-        TableName: process.env.DYNAMODB_TABLE,
+        TableName: process.env.ACCT_DYNAMODB_TABLE,
       };
 
       this.dynamoDb.scan(params, function (err: any, data: any) {
@@ -38,7 +38,7 @@ export class AccountDal {
   get(userId: string) {
     return new Promise((resolve, reject) => {
       const params = {
-        TableName: process.env.DYNAMODB_TABLE,
+        TableName: process.env.ACCT_DYNAMODB_TABLE,
         Key: {
           "userId": userId
         }

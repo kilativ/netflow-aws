@@ -14,7 +14,8 @@ export class NetFlowPlaidBankAccount {
     id!: string;
     nickname!: string;
     token!: string;
-    active: boolean = false;
+    active!: boolean;
+    plaidAccountId!: string;
 }
 
 export interface GoogleEmail {

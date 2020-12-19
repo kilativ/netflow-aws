@@ -1,18 +1,14 @@
 import dotenv from 'dotenv';
 import moment from 'moment';
 import plaid, { TransactionsResponse } from 'plaid';
-import util from 'util';
 import { AccountDal } from './dal/account-dal';
-import { PlaidRoutes } from './server-plaid';
+import { TransactionDal } from './dal/transactions-dal';
 
 
 export class Transactions {
     private PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
     private PLAID_SECRET = process.env.PLAID_SECRET;
     private PLAID_ENV = process.env.PLAID_ENV;
-    private PLAID_PRODUCTS = process.env.PLAID_PRODUCTS.split(',');
-    private PLAID_COUNTRY_CODES = process.env.PLAID_COUNTRY_CODES.split(',');
-    private PLAID_REDIRECT_URI = process.env.PLAID_REDIRECT_URI;
 
     private  client = new plaid.Client({
         clientID: this.PLAID_CLIENT_ID,
@@ -27,10 +23,12 @@ export class Transactions {
         const netFlowUsers = await new AccountDal().getAll();
 
         // for each account 
+        const transactionDal = new TransactionDal()
         netFlowUsers.forEach(async user => 
             user.accounts.forEach(async acct => {
-                const txns = await this.fetchTransactions(acct.token);
+                const txns = await this.fetchTransactions(acct.token); // why does respons contains accounts as well? and more than one?
                 console.log(txns);
+                txns.transactions.forEach(txn=>transactionDal.update(txn))
             })
         )
 
