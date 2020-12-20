@@ -12,7 +12,20 @@ export class AccountService {
             console.log(error)
         })
 
-        const response = await axios.get<NetFlowUser>("/user", {headers: {
+        const response = await axios.get<NetFlowUser>("/s/api/user", {headers: {
+            'Authorization': `Bearer ${accessToken}`
+            }});
+        return response.data;
+    }
+
+    async getAccountTransactions(accessToken: string, accountId: string) {
+        axios.interceptors.response.use(res => { // todo make this global
+            return res;
+        }, function (error) {
+            console.log(error)
+        })
+
+        const response = await axios.get(`/s/api/transactions/${accountId}`, {headers: {
             'Authorization': `Bearer ${accessToken}`
             }});
         return response.data;

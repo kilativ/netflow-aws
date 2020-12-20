@@ -7,6 +7,9 @@ import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
+import querystring from 'querystring'
+import { Transactions } from './jobs';
+import { TransactionDal } from './dal/transactions-dal';
 
 dotenv.config();
 
@@ -25,6 +28,16 @@ PlaidRoutes.Add(app);
 app.get('/', (req, res) => {
   res.sendFile('./index.html', { root: __dirname });
 })
+
+const validateAccount = function (req: any, res: any, next: any) {
+  console.log(req.params.accountId);
+
+  // get user
+  // get user accounts
+  // make sure account is on the list
+
+  next();
+} 
 
 const validateUser = async function (req: any, res: any, next: any) {
   let token = req.headers["authorization"] as string;
@@ -50,7 +63,7 @@ const validateUser = async function (req: any, res: any, next: any) {
     });
 };
 
-app.get('/user'
+app.get('/s/api/user'
   , validateUser,
   function (req: any, res) {
     console.log(req);
@@ -58,4 +71,12 @@ app.get('/user'
       .get(req.user.email as string)
       .then(data => res.send(data))
       .catch(err => res.status(500).json(err));
+  });
+
+app.get('/s/api/transactions/:accountId'
+  , validateAccount,
+  function (req: any, res) {
+    console.log(req.params.accountId)
+
+    new TransactionDal().getAllForAccount(req.params.accountId).then(txn=> res.send(txn)).catch(err => res.status(500).json(err));
   });

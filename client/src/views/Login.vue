@@ -2,7 +2,6 @@
 <div>
   <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
   <h1>IsAuthorized: {{ Vue3GoogleOauth.isAuthorized }}</h1>
-  access token {{}}
   <h2 v-if="user">signed user: {{user}}</h2>
   <button @click="test">Test</button>
   <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized">sign in</button>
@@ -29,8 +28,7 @@ export default {
   methods: {
     test() {
       const user = this.$gAuth.instance.currentUser.get();
-      console.log(user.getAuthResponse().token_type);
-      console.log(user.getAuthResponse().access_token);
+      console.log(user);
     },
 
 

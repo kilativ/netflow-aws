@@ -39,7 +39,7 @@ export class TransactionDal {
         TableName: process.env.TAXN_DYNAMODB_TABLE,
         KeyConditionExpression: 'account_id = :accountId',
         ExpressionAttributeValues: {
-          ":accountId": {S: accountId}
+          ":accountId": accountId
         }
       };
 
@@ -55,4 +55,3 @@ export class TransactionDal {
     })
   }
 }
-

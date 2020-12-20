@@ -32,7 +32,7 @@ export class BalanceDal {
         TableName: process.env.BALANCE_DYNAMODB_TABLE,
         KeyConditionExpression: 'account_id = :accountId',
         ExpressionAttributeValues: {
-          ":accountId": {S: accountId}
+          ":accountId": accountId
         }
       };
 

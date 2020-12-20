@@ -23,6 +23,12 @@
             "outFiles": [
                 "${workspaceFolder}/server/dist/**/*.js"
             ]
-        }
+        },
+        {
+            "command": "npm run run-server-quick",
+            "name": "Server Quick",
+            "request": "launch",
+            "type": "node-terminal"
+        },
     ]
 }

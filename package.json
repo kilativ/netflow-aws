@@ -7,6 +7,7 @@
     "build-server": "cd server && npm install && npm run build",
     "build-deploy": "node build.js",
     "run-jobs": "cd server && npm run run-jobs",
+    "run-server-quick": "cd server && npm run run-server-quick",
     "serve": "cd build && node server.js"
   },
   "repository": {

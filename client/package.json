@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.20.0",
     "core-js": "^3.6.5",
+    "plaid": "^8.1.1",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-google-oauth2": "^1.5.5",
