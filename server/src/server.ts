@@ -7,8 +7,6 @@ import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
-import querystring from 'querystring'
-import { Transactions } from './jobs';
 import { TransactionDal } from './dal/transactions-dal';
 
 dotenv.config();
@@ -31,15 +29,30 @@ app.get('/', (req, res) => {
 
 const validateAccount = function (req: any, res: any, next: any) {
   console.log(req.params.accountId);
+  const accountId = req.params.accountId;
+  const response = res;
 
-  // get user
-  // get user accounts
-  // make sure account is on the list
-
-  next();
+  getUser(req).then(async email => {
+    // get user accounts
+    // make sure account is on the list
+    const user = await new AccountDal().get(email);
+    const bank = user.banks.find(bank=> bank.accounts.map(acct=>acct.account_id).indexOf(accountId)>=0);
+    if (bank) {
+      next();
+    } else {
+      response.status(401).json("not authorized")
+    }
+  }).catch(error => {
+    console.log(error);
+    response.status(401).json("not authorized");
+  });
 } 
 
-const validateUser = async function (req: any, res: any, next: any) {
+const validateUser = function (req: any, res: any, next: any) {
+  getUser(req).then(() => next()).catch(()=>res.status(401).json("not authorized"))
+};
+
+const getUser = function (req: { headers: { [x: string]: string; }; }) : Promise<string> {
   let token = req.headers["authorization"] as string;
   token = token.substr(7); // bearer 
 
@@ -50,18 +63,19 @@ const validateUser = async function (req: any, res: any, next: any) {
     auth: oauth2Client,
     version: 'v2'
   });
-  oauth2.userinfo.get(
-    function (err, googlResponse) {
-      if (err) {
-        console.log(err);
-        res.status(401).json("not authorized");
-      } else {
-        console.log(res);
-        req.user = googlResponse.data;
-        next();
-      }
-    });
-};
+
+  return new Promise((resolve, reject) => {
+    oauth2.userinfo.get(
+      function (err, googlResponse) {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(googlResponse.data.email)
+        }
+      });
+  });
+
+}
 
 app.get('/s/api/user'
   , validateUser,
@@ -76,7 +90,7 @@ app.get('/s/api/user'
 app.get('/s/api/transactions/:accountId'
   , validateAccount,
   function (req: any, res) {
-    console.log(req.params.accountId)
-
-    new TransactionDal().getAllForAccount(req.params.accountId).then(txn=> res.send(txn)).catch(err => res.status(500).json(err));
+    new TransactionDal().getAllForAccount(req.params.accountId)
+    .then(txn=> res.send(txn))
+    .catch(err => res.status(500).json(err));
   });

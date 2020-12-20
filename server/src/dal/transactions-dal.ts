@@ -48,7 +48,6 @@ export class TransactionDal {
           console.error(err);
           reject(err);
         } else {
-          console.log(data);
           resolve(data.Items);
         }
       });
