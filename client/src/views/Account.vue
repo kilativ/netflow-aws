@@ -3,8 +3,13 @@
     <h1>This is my account page</h1>
 
     <h2>Accounts</h2>
-    <div v-for="item in list" :key="item.id">
-        <a v-bind:href="'/account/'+ item.id">{{item.nickname}}</a>
+    <div v-for="bank in list" :key="bank.id">
+        <h4>{{bank.nickname}}</h4>
+        <div v-for="account in bank.accounts" :key="account.account_id">
+            <a v-bind:href="'/transactions/'+ account.account_id">{{account.official_name?? account.name}}</a> 
+             - {{account.mask}} ({{account.type}} - {{account.subtype}})
+             {{$filters.currencyUSD(account.balances.current)}}
+        </div>
     </div>
   </div>
 </template>
