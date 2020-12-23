@@ -22,6 +22,11 @@ const routes: Array<RouteRecordRaw> = [
     component: TransactionsView
   },
   {
+    path: '/snapshot',
+    props: true,
+    component: () => import('../views/Snapshot.vue')
+  },
+  {
     path: '/about',
     name: 'About',
     // route level code-splitting

@@ -8,6 +8,7 @@ import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
 import { TransactionDal } from './dal/transactions-dal';
+import { SnapshotBalance } from './dal/snapshot';
 
 dotenv.config();
 
@@ -33,8 +34,6 @@ const validateAccount = function (req: any, res: any, next: any) {
   const response = res;
 
   getUser(req).then(async email => {
-    // get user accounts
-    // make sure account is on the list
     const user = await new AccountDal().get(email);
     const bank = user.banks.find(bank=> bank.accounts.map(acct=>acct.account_id).indexOf(accountId)>=0);
     if (bank) {
@@ -49,7 +48,10 @@ const validateAccount = function (req: any, res: any, next: any) {
 } 
 
 const validateUser = function (req: any, res: any, next: any) {
-  getUser(req).then(() => next()).catch(()=>res.status(401).json("not authorized"))
+  getUser(req).then(email =>{
+    req.user = email
+    next()
+  } ).catch(()=>res.status(401).json("not authorized"))
 };
 
 const getUser = function (req: { headers: { [x: string]: string; }; }) : Promise<string> {
@@ -82,7 +84,7 @@ app.get('/s/api/user'
   function (req: any, res) {
     console.log(req);
     new AccountDal()
-      .get(req.user.email as string)
+      .get(req.user as string)
       .then(data => res.send(data))
       .catch(err => res.status(500).json(err));
   });
@@ -94,3 +96,17 @@ app.get('/s/api/transactions/:accountId'
     .then(txn=> res.send(txn))
     .catch(err => res.status(500).json(err));
   });
+
+
+app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ function(req, res) {
+  const results = [
+    SnapshotBalance.build(new Date('2020-12-20'), 2000, 'current', false),
+    SnapshotBalance.build(new Date('2020-12-21'), 1900, 'CC 1', true),
+    SnapshotBalance.build(new Date('2020-12-22'), 1850, 'CC 2', true),
+    SnapshotBalance.build(new Date('2020-12-23'), 3000, 'Paycheck', true),
+    SnapshotBalance.build(new Date('2020-12-24'), 1500, 'Mortgage', true),
+    SnapshotBalance.build(new Date('2020-12-25'), 1200, 'CC 3', true),
+  ]
+  res.send(results);
+});
+
