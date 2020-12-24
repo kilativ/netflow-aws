@@ -1,16 +1,34 @@
 <template>
-<div style="width:500px; height:300px">
-  <canvas ref="myChart" width="500" height="300"></canvas>
+  <div style="width: 1000px; height: 600px">
+    <canvas ref="myChart" id="myChart"></canvas>
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import Chart from "chart.js";
+import { inject } from "vue";
+import { Vue } from "vue-class-component";
+import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
+import { AccountService } from "../services/account";
 
-export default {
-  name: "monthly-sales-chart",
+export default class SnapshotView extends Vue {
+  formatter: any;
+
+  // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
+
   mounted() {
-    new Chart(this.$refs.myChart, {
+     this.formatter = inject('formaters'); // is there a better way to access globa properties than injecting it?
+     new AccountService().getAccountSnapshot('accountIdHere').then(data => {
+       console.log(data);
+       this.createChart(data);
+     })
+
+  }
+
+  createChart(chartData: SnapshotBalance[]) {
+    const cavnas = document.getElementById("myChart") as HTMLCanvasElement;
+    const formatter= this.formatter;
+    new Chart(cavnas, {
       type: "line",
       options: {
         scales: {
@@ -18,35 +36,48 @@ export default {
             {
               ticks: {
                 beginAtZero: true,
-                suggestedMax: 100,
               },
             },
           ],
-            xAxes: [{
-                type: 'time',
-                time: {
-                    unit: 'week'
-                }
-            }]
+          xAxes: [
+            {
+              type: "time",
+              time: {
+                unit: "day",
+              },
+            },
+          ],
         },
+        tooltips: {
+          mode: "index",
+          displayColors: false,
+          callbacks: {
+            title: function(tooltipItems, data) {
+              const item = chartData[tooltipItems[0].index as number];
+							return item.notes;
+            },
+            label: function (tooltipItems, data) {
+              const item = chartData[tooltipItems.index as number];
+              return formatter.currencyUSD(item.transactionAmount);
+            }
+          }
+        }
       },
       data: {
-          
         datasets: [
           {
             steppedLine: true,
-            label: "Account Balance",
-            data:  [{
-    x: new Date("2020-02-02"),
-    y: 10
-}, {
-    t: new Date("2020-03-03"),
-    y: 100
-}]
+            fill:false,
+            borderDash: [5, 2],
+            borderColor: 'rgba(255,125,125,1)',
+            label: "Checking Account Balance",
+            data: chartData.map(d=> {
+              return {x:d.date, y:d.balance }
+            }) 
           },
         ],
       },
     });
-  },
-};
+  }
+}
 </script>

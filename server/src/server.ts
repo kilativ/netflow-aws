@@ -8,7 +8,7 @@ import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
 import { TransactionDal } from './dal/transactions-dal';
-import { SnapshotBalance } from './dal/snapshot';
+import { SnapshotBalance } from '../../shared/models/snapshot-dto';
 
 dotenv.config();
 
@@ -100,12 +100,12 @@ app.get('/s/api/transactions/:accountId'
 
 app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ function(req, res) {
   const results = [
-    SnapshotBalance.build(new Date('2020-12-20'), 2000, 'current', false),
-    SnapshotBalance.build(new Date('2020-12-21'), 1900, 'CC 1', true),
-    SnapshotBalance.build(new Date('2020-12-22'), 1850, 'CC 2', true),
-    SnapshotBalance.build(new Date('2020-12-23'), 3000, 'Paycheck', true),
-    SnapshotBalance.build(new Date('2020-12-24'), 1500, 'Mortgage', true),
-    SnapshotBalance.build(new Date('2020-12-25'), 1200, 'CC 3', true),
+    SnapshotBalance.build(new Date('2020-12-20'), 2000, 2000, 'current', false),
+    SnapshotBalance.build(new Date('2020-12-21'), 1900, -100, 'Chase Freedom Car Payment', true),
+    SnapshotBalance.build(new Date('2020-12-22'), 1850, -50, 'Bank of America Visa Payment', true),
+    SnapshotBalance.build(new Date('2020-12-23'), 3000, 1150, 'Microsoft Paycheck', true),
+    SnapshotBalance.build(new Date('2020-12-24'), 1500, -1500, 'Wells Fargo Mortgage', true),
+    SnapshotBalance.build(new Date('2020-12-25'), 1200, -300, 'Wells Fargo MasterCard', true),
   ]
   res.send(results);
 });

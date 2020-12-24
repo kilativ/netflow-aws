@@ -16,4 +16,4 @@ app.config.globalProperties.$filters = {
     }
   }
 app.use(gAuthPlugin,gauthOption).use(router).mount('#app') 
-
+app.provide('formaters',app.config.globalProperties.$filters); // is there a way to avoid it?

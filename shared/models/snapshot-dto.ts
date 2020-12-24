@@ -1,17 +1,19 @@
-export class Snapshot {
+export class SnapshotDto {
     balances: SnapshotBalance[];    
 }
 
 export class SnapshotBalance {
     date: Date;
     balance: number;
+    transactionAmount: number;
     notes: string;
     future = false;
 
-    static build(date: Date, balance: number, notes: string, future:boolean) {
+    static build(date: Date, balance: number, transactionAmount: number, notes: string, future:boolean) {
         const instance  = new SnapshotBalance();
         instance.date = date;
         instance.balance = balance;
+        instance.transactionAmount= transactionAmount;
         instance.notes = notes;
         instance.future = future;
         return instance;
