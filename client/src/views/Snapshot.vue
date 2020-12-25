@@ -25,15 +25,15 @@ export default class SnapshotView extends NetFlowVue {
   }
 
   loadData() {
-        new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
-      console.log(data);
-      this.createChart(data);
+      new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
+        this.createChart(data.account.official_name ?? data.account.name, data.balances.filter(b=>!b.future), data.balances.filter(b=>b.future));
     });
   }
 
-  createChart(chartData: SnapshotDto) {
+  createChart(name: string, current: SnapshotBalance[], future: SnapshotBalance[]) {
     const cavnas = document.getElementById("myChart") as HTMLCanvasElement;
     const formatter = Formatter;
+
     new Chart(cavnas, {
       type: "line",
       options: {
@@ -55,20 +55,13 @@ export default class SnapshotView extends NetFlowVue {
           ],
         },
         tooltips: {
-          mode: "index",
           displayColors: false,
           callbacks: {
-            title: function (tooltipItems, data) {
-              if (tooltipItems.length > 1) {
-                debugger;
-              }
-              const item = chartData.balances[tooltipItems[0].index as number];
-              return item.notes;
-            },
             label: function (tooltipItems, data) {
-              const item = chartData.balances[tooltipItems.index as number];
+              const item = tooltipItems.datasetIndex === 0?  current[tooltipItems.index as number]: future[tooltipItems.index as number];
               return [
-                new Date(item.date).toLocaleDateString(),
+                item.notes,
+                new Date(item.date).toDateString(),
                 `amount: ${formatter.currencyUSD(item.transactionAmount)}`,
                 `balance: ${formatter.currencyUSD(item.balance)}`,
               ];
@@ -83,10 +76,16 @@ export default class SnapshotView extends NetFlowVue {
             fill: false,
             borderDash: [5, 0],
             borderColor: "rgba(255,64,64,1)",
-            label: chartData.account.official_name??chartData.account.name,
-            data: chartData.balances.map((d) => {
-              return { x: d.date, y: d.balance };
-            }),
+            label: name,
+            data: current.map((d) => { return { x: d.date, y: d.balance };}),
+          },
+          {
+            steppedLine: true,
+            fill: false,
+            borderDash: [5, 5],
+            borderColor: "rgba(255,64,64,1)",
+            label: "predicted",
+            data: future.map((d) => { return { x: d.date, y: d.balance };}),
           },
         ],
       },

@@ -29,7 +29,6 @@ app.get('/', (req, res) => {
 })
 
 const validateAccount = function (req: any, res: any, next: any) {
-  console.log(req.params.accountId);
   const accountId = req.params.accountId;
   const response = res;
 
@@ -50,7 +49,7 @@ const validateAccount = function (req: any, res: any, next: any) {
 
 const validateUser = function (req: any, res: any, next: any) {
   getUser(req).then(email =>{
-    req.user = email
+    req.user = email;
     next()
   } ).catch(()=>res.status(401).json("not authorized"))
 };
@@ -98,7 +97,7 @@ app.get('/s/api/transactions/:accountId'
   });
 
 
-app.get('/s/api/snapshot/:accountId', validateAccount, async function(req: any, res) {
-  res.send(await new SnapshotCalculator().get(req.account, 45));
+app.get('/s/api/snapshot/:accountId', [validateUser, validateAccount], async function(req: any, res: any) {
+  res.send(await new SnapshotCalculator().get(req.account, 45, 45, req.user));
 });
 
