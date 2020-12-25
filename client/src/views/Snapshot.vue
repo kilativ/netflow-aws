@@ -8,27 +8,32 @@
 import Chart from "chart.js";
 import { inject } from "vue";
 import { Vue } from "vue-class-component";
-import { Prop } from "vue-property-decorator";
+import { Prop, Watch } from "vue-property-decorator";
 import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
+import { NetFlowVue } from "./NetFlowBaseVue";
+import { Formatter } from '../utils/formatter'
 
-export default class SnapshotView extends Vue {
-  formatter: any;
- @Prop(String) accountId!: string;
+export default class SnapshotView extends NetFlowVue {
+  @Prop(String) accountId!: string;
   // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
 
-  mounted() {
-     this.formatter = inject('formaters'); // is there a better way to access globa properties than injecting it?
-     new AccountService().getAccountSnapshot(this.accountId).then(data => {
-       console.log(data);
-       this.createChart(data);
-     })
+  @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
+    if (this.Vue3GoogleOauth.isInit) {
+      this.loadData();
+    }
+  }
 
+  loadData() {
+        new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
+      console.log(data);
+      this.createChart(data);
+    });
   }
 
   createChart(chartData: SnapshotBalance[]) {
     const cavnas = document.getElementById("myChart") as HTMLCanvasElement;
-    const formatter= this.formatter;
+    const formatter = Formatter;
     new Chart(cavnas, {
       type: "line",
       options: {
@@ -53,28 +58,35 @@ export default class SnapshotView extends Vue {
           mode: "index",
           displayColors: false,
           callbacks: {
-            title: function(tooltipItems, data) {
+            title: function (tooltipItems, data) {
+              if (tooltipItems.length > 1) {
+                debugger;
+              }
               const item = chartData[tooltipItems[0].index as number];
-							return item.notes;
+              return item.notes;
             },
             label: function (tooltipItems, data) {
               const item = chartData[tooltipItems.index as number];
-              return [new Date(item.date).toLocaleDateString(), formatter.currencyUSD(item.transactionAmount), `balance: ${formatter.currencyUSD(item.balance)}`];
-            }
-          }
-        }
+              return [
+                new Date(item.date).toLocaleDateString(),
+                `amount: ${formatter.currencyUSD(item.transactionAmount)}`,
+                `balance: ${formatter.currencyUSD(item.balance)}`,
+              ];
+            },
+          },
+        },
       },
       data: {
         datasets: [
           {
             steppedLine: true,
-            fill:false,
-            borderDash: [5, 2],
-            borderColor: 'rgba(255,125,125,1)',
+            fill: false,
+            borderDash: [5, 0],
+            borderColor: "rgba(255,64,64,1)",
             label: "Checking Account Balance",
-            data: chartData.map(d=> {
-              return {x:d.date, y:d.balance }
-            }) 
+            data: chartData.map((d) => {
+              return { x: d.date, y: d.balance };
+            }),
           },
         ],
       },

@@ -32,8 +32,10 @@ export class AccountService {
         return response.data;
     }
 
-    async getAccountSnapshot(/* accessToken: string ,*/ accountId: string): Promise<SnapshotBalance[]> {
-        const response =  await axios.get(`/s/api/snapshot/${accountId}`);
+    async getAccountSnapshot(accessToken: string , accountId: string): Promise<SnapshotBalance[]> {
+        const response =  await axios.get(`/s/api/snapshot/${accountId}`,{headers: {
+            'Authorization': `Bearer ${accessToken}`
+            }});
         return response.data;
     }
 

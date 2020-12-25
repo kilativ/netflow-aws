@@ -8,9 +8,7 @@ import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
 import { TransactionDal } from './dal/transactions-dal';
-import { SnapshotBalance } from '../../shared/models/snapshot-dto';
-import { BalanceDal } from './dal/balance-dal';
-import { dataflow } from 'googleapis/build/src/apis/dataflow';
+import { SnapshotCalculator } from './snapshot-calculator';
 
 dotenv.config();
 
@@ -39,6 +37,7 @@ const validateAccount = function (req: any, res: any, next: any) {
     const user = await new AccountDal().get(email);
     const bank = user.banks.find(bank=> bank.accounts.map(acct=>acct.account_id).indexOf(accountId)>=0);
     if (bank) {
+      req.account = bank.accounts.find(acct=> acct.account_id === accountId);
       next();
     } else {
       response.status(401).json("not authorized")
@@ -99,31 +98,8 @@ app.get('/s/api/transactions/:accountId'
   });
 
 
-app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ async function(req, res) {
-  const accountId = req.params.accountId;
-  const balances =  await new BalanceDal().getAllForAccount(accountId);
-  const latestBalances= balances.reduce((prev,current)=> (prev.date > current.date)? prev: current);
-  let allTxns = await new TransactionDal().getAllForAccount(accountId);
-
-  var dateOffset = (24*60*60*1000) * 30; //30 days back
-  const lowerLimitDate = new Date();
-  lowerLimitDate.setTime (new Date(latestBalances.date).getTime() - dateOffset);
-  allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimitDate).sort((a,b)=> {return a.date.localeCompare(b.date);});
-
-  const sumOfAllAmounts = allTxns.map(txn=>txn.amount).reduce((t1,t2)=>t1+t2, 0);
-  const startingBalance = latestBalances.current + sumOfAllAmounts;
-
-  const results: SnapshotBalance[]= [];
-  results.push(SnapshotBalance.build(lowerLimitDate, startingBalance, startingBalance, "balance on " + lowerLimitDate.toDateString(), false));
-
-  let curBalance = startingBalance;
-  allTxns.forEach (txn=> {
-    curBalance = curBalance - txn.amount;
-    results.push(SnapshotBalance.build(new Date(txn.date), curBalance, -1 * txn.amount, txn.name, false));
-  })
-
-  results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalances.current, 0, 'current', false));
-  
-  res.send(results);
+app.get('/s/api/snapshot/:accountId', validateAccount, async function(req: any, res) {
+  const account = req.account;
+  res.send(await new SnapshotCalculator().get(account, 30));
 });
 
