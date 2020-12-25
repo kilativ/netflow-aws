@@ -25,7 +25,7 @@ export class BalanceDal {
   }
 
 
-  getAllForAccount(accountId: string): Promise<BalanceDto> {
+  getAllForAccount(accountId: string): Promise<BalanceDto[]> {
     // todo can be made generic for any table with accountId
     return new Promise((resolve, reject) => {
       const params = {

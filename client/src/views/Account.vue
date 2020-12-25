@@ -10,6 +10,7 @@
             <a v-bind:href="'/transactions/'+ account.account_id">{{account.official_name?? account.name}}</a> 
              - {{account.mask}} ({{account.type}} - {{account.subtype}})
              {{$filters.currencyUSD(account.balances.current)}}
+             <a v-bind:href="'/snapshot/'+ account.account_id">Snapshot</a> 
         </div>
     </div>
   </div>

@@ -8,17 +8,18 @@
 import Chart from "chart.js";
 import { inject } from "vue";
 import { Vue } from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 
 export default class SnapshotView extends Vue {
   formatter: any;
-
+ @Prop(String) accountId!: string;
   // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
 
   mounted() {
      this.formatter = inject('formaters'); // is there a better way to access globa properties than injecting it?
-     new AccountService().getAccountSnapshot('accountIdHere').then(data => {
+     new AccountService().getAccountSnapshot(this.accountId).then(data => {
        console.log(data);
        this.createChart(data);
      })
@@ -66,7 +67,7 @@ export default class SnapshotView extends Vue {
       data: {
         datasets: [
           {
-            steppedLine: true,
+            steppedLine: 'after',
             fill:false,
             borderDash: [5, 2],
             borderColor: 'rgba(255,125,125,1)',

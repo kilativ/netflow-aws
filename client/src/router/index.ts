@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
     component: TransactionsView
   },
   {
-    path: '/snapshot',
+    path: '/snapshot/:accountId',
     props: true,
     component: () => import('../views/Snapshot.vue')
   },

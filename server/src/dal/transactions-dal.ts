@@ -33,7 +33,7 @@ export class TransactionDal {
     });
   }
 
-  getAllForAccount(accountId: string): Promise<Transaction> {
+  getAllForAccount(accountId: string): Promise<Transaction[]> {
     return new Promise((resolve, reject) => {
       const params = {
         TableName: process.env.TAXN_DYNAMODB_TABLE,

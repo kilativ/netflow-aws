@@ -9,6 +9,8 @@ import { AccountDal } from './dal/account-dal';
 import { google } from 'googleapis';
 import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotBalance } from '../../shared/models/snapshot-dto';
+import { BalanceDal } from './dal/balance-dal';
+import { dataflow } from 'googleapis/build/src/apis/dataflow';
 
 dotenv.config();
 
@@ -82,7 +84,6 @@ const getUser = function (req: { headers: { [x: string]: string; }; }) : Promise
 app.get('/s/api/user'
   , validateUser,
   function (req: any, res) {
-    console.log(req);
     new AccountDal()
       .get(req.user as string)
       .then(data => res.send(data))
@@ -98,15 +99,30 @@ app.get('/s/api/transactions/:accountId'
   });
 
 
-app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ function(req, res) {
-  const results = [
-    SnapshotBalance.build(new Date('2020-12-20'), 2000, 2000, 'current', false),
-    SnapshotBalance.build(new Date('2020-12-21'), 1900, -100, 'Chase Freedom Car Payment', true),
-    SnapshotBalance.build(new Date('2020-12-22'), 1850, -50, 'Bank of America Visa Payment', true),
-    SnapshotBalance.build(new Date('2020-12-23'), 3000, 1150, 'Microsoft Paycheck', true),
-    SnapshotBalance.build(new Date('2020-12-24'), 1500, -1500, 'Wells Fargo Mortgage', true),
-    SnapshotBalance.build(new Date('2020-12-25'), 1200, -300, 'Wells Fargo MasterCard', true),
-  ]
+app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ async function(req, res) {
+  // get latest balance
+  // get transaction last 30? days?
+  // populate the data structure.
+  const accountId = req.params.accountId;
+  const balances =  await new BalanceDal().getAllForAccount(accountId);
+  const latestBalances= balances.reduce((prev,current)=> (prev.date > current.date)? prev: current);
+  let allTxns = await new TransactionDal().getAllForAccount(accountId);
+
+  var dateOffset = (24*60*60*1000) * 30; //30 days
+  const lowerLimit = new Date();
+  lowerLimit.setTime (new Date(latestBalances.date).getTime() - dateOffset);
+
+  allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimit).sort((a,b)=> {return b.date.localeCompare(a.date);});
+
+  const results: SnapshotBalance[]= [];
+  results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalances.current, latestBalances.current, "current", false));
+
+  let curBalance = latestBalances.current;
+  allTxns.forEach (txn=> {
+    curBalance = curBalance + txn.amount;
+    results.push(SnapshotBalance.build(new Date(txn.date), curBalance, -1 * txn.amount, txn.name, false));
+  })
+  
   res.send(results);
 });
 

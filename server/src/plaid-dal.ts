@@ -33,20 +33,25 @@ export class PlaidDal {
     
     
     public async fetchTransactions(accessToken: string): Promise<TransactionsResponse> {
-        let startDate = moment().subtract(365, 'days').format('YYYY-MM-DD');
+        let startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
         let endDate = moment().format('YYYY-MM-DD');
-        return new Promise((resolve, reject) => {
-            this.client.getTransactions(accessToken, startDate, endDate, {
-                count: 250,
-                offset: 0,
-              }, function (error, transactionsResponse) {
-                if (error != null) {
-                  console.error(error);
-                  reject(error);
-                } else {
-                    resolve(transactionsResponse);
-                }
-              });
-        });
+
+        const originalResponse = await this.client.getTransactions(accessToken, startDate, endDate, {});
+        let transactions = originalResponse.transactions;
+        const total_transactions = originalResponse.total_transactions;
+      
+        while (transactions.length < total_transactions) {
+          const paginatedTransactionsResponse = await this.client.getTransactions(accessToken, startDate, endDate,
+            {
+              offset: transactions.length,
+            },
+          );
+          transactions = transactions.concat(
+            paginatedTransactionsResponse.transactions
+          );
+        }
+
+        originalResponse.transactions = transactions;
+        return originalResponse;
     }
 }
