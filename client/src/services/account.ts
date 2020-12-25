@@ -1,6 +1,6 @@
 import axios from "axios";
 import { NetFlowUser } from '../../../shared/models/account-dto'
-import { SnapshotBalance } from '../../../shared/models/snapshot-dto';
+import { SnapshotBalance, SnapshotDto } from '../../../shared/models/snapshot-dto';
 
 axios.defaults.baseURL = "http://localhost:3000";
 
@@ -32,7 +32,7 @@ export class AccountService {
         return response.data;
     }
 
-    async getAccountSnapshot(accessToken: string , accountId: string): Promise<SnapshotBalance[]> {
+    async getAccountSnapshot(accessToken: string , accountId: string): Promise<SnapshotDto> {
         const response =  await axios.get(`/s/api/snapshot/${accountId}`,{headers: {
             'Authorization': `Bearer ${accessToken}`
             }});

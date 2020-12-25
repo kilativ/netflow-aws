@@ -1,5 +1,8 @@
+import {Account} from 'plaid'
+
 export class SnapshotDto {
     balances: SnapshotBalance[];    
+    account: Account;
 }
 
 export class SnapshotBalance {

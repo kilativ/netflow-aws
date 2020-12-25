@@ -9,7 +9,7 @@ import Chart from "chart.js";
 import { inject } from "vue";
 import { Vue } from "vue-class-component";
 import { Prop, Watch } from "vue-property-decorator";
-import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
+import { SnapshotBalance, SnapshotDto } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import { Formatter } from '../utils/formatter'
@@ -31,7 +31,7 @@ export default class SnapshotView extends NetFlowVue {
     });
   }
 
-  createChart(chartData: SnapshotBalance[]) {
+  createChart(chartData: SnapshotDto) {
     const cavnas = document.getElementById("myChart") as HTMLCanvasElement;
     const formatter = Formatter;
     new Chart(cavnas, {
@@ -62,11 +62,11 @@ export default class SnapshotView extends NetFlowVue {
               if (tooltipItems.length > 1) {
                 debugger;
               }
-              const item = chartData[tooltipItems[0].index as number];
+              const item = chartData.balances[tooltipItems[0].index as number];
               return item.notes;
             },
             label: function (tooltipItems, data) {
-              const item = chartData[tooltipItems.index as number];
+              const item = chartData.balances[tooltipItems.index as number];
               return [
                 new Date(item.date).toLocaleDateString(),
                 `amount: ${formatter.currencyUSD(item.transactionAmount)}`,
@@ -83,8 +83,8 @@ export default class SnapshotView extends NetFlowVue {
             fill: false,
             borderDash: [5, 0],
             borderColor: "rgba(255,64,64,1)",
-            label: "Checking Account Balance",
-            data: chartData.map((d) => {
+            label: chartData.account.official_name??chartData.account.name,
+            data: chartData.balances.map((d) => {
               return { x: d.date, y: d.balance };
             }),
           },

@@ -99,7 +99,6 @@ app.get('/s/api/transactions/:accountId'
 
 
 app.get('/s/api/snapshot/:accountId', validateAccount, async function(req: any, res) {
-  const account = req.account;
-  res.send(await new SnapshotCalculator().get(account, 30));
+  res.send(await new SnapshotCalculator().get(req.account, 45));
 });
 
