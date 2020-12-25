@@ -100,28 +100,29 @@ app.get('/s/api/transactions/:accountId'
 
 
 app.get('/s/api/snapshot/:accountId', /*validateAccount,*/ async function(req, res) {
-  // get latest balance
-  // get transaction last 30? days?
-  // populate the data structure.
   const accountId = req.params.accountId;
   const balances =  await new BalanceDal().getAllForAccount(accountId);
   const latestBalances= balances.reduce((prev,current)=> (prev.date > current.date)? prev: current);
   let allTxns = await new TransactionDal().getAllForAccount(accountId);
 
-  var dateOffset = (24*60*60*1000) * 30; //30 days
-  const lowerLimit = new Date();
-  lowerLimit.setTime (new Date(latestBalances.date).getTime() - dateOffset);
+  var dateOffset = (24*60*60*1000) * 30; //30 days back
+  const lowerLimitDate = new Date();
+  lowerLimitDate.setTime (new Date(latestBalances.date).getTime() - dateOffset);
+  allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimitDate).sort((a,b)=> {return a.date.localeCompare(b.date);});
 
-  allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimit).sort((a,b)=> {return b.date.localeCompare(a.date);});
+  const sumOfAllAmounts = allTxns.map(txn=>txn.amount).reduce((t1,t2)=>t1+t2, 0);
+  const startingBalance = latestBalances.current + sumOfAllAmounts;
 
   const results: SnapshotBalance[]= [];
-  results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalances.current, latestBalances.current, "current", false));
+  results.push(SnapshotBalance.build(lowerLimitDate, startingBalance, startingBalance, "balance on " + lowerLimitDate.toDateString(), false));
 
-  let curBalance = latestBalances.current;
+  let curBalance = startingBalance;
   allTxns.forEach (txn=> {
-    curBalance = curBalance + txn.amount;
+    curBalance = curBalance - txn.amount;
     results.push(SnapshotBalance.build(new Date(txn.date), curBalance, -1 * txn.amount, txn.name, false));
   })
+
+  results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalances.current, 0, 'current', false));
   
   res.send(results);
 });

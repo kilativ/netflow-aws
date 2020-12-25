@@ -41,7 +41,6 @@ export class BalanceDal {
           console.error(err);
           reject(err);
         } else {
-          console.log(data);
           resolve(data.Items);
         }
       });

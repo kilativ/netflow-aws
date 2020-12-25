@@ -59,7 +59,7 @@ export default class SnapshotView extends Vue {
             },
             label: function (tooltipItems, data) {
               const item = chartData[tooltipItems.index as number];
-              return [new Date(item.date).toLocaleDateString(), formatter.currencyUSD(item.transactionAmount)];
+              return [new Date(item.date).toLocaleDateString(), formatter.currencyUSD(item.transactionAmount), `balance: ${formatter.currencyUSD(item.balance)}`];
             }
           }
         }
@@ -67,7 +67,7 @@ export default class SnapshotView extends Vue {
       data: {
         datasets: [
           {
-            steppedLine: 'after',
+            steppedLine: true,
             fill:false,
             borderDash: [5, 2],
             borderColor: 'rgba(255,125,125,1)',
