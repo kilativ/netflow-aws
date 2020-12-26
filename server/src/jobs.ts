@@ -63,7 +63,5 @@ export class Maintennce {
 }
 
 dotenv.config();
-// new Transactions().saveToDb();
+new Transactions().saveToDb();
 // new Maintennce().copyDynamoDbTables();
-
-new BalanceDal().calcBalanceOnDate('wbwVjAPPDvsoqyXMDaxVTP9NN46Bx6fLPoNAv', new Date('2020-12-03')).then(data=>console.log(data))

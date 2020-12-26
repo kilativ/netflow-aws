@@ -3,6 +3,7 @@ import { BalanceDal } from './dal/balance-dal';
 import { Account} from 'plaid';
 import { TransactionDal } from './dal/transactions-dal';
 import { AccountDal } from './dal/account-dal';
+import { AccountSnapshotScheduledTransactionsSettings } from '../../shared/models/account-dto';
 
 export class SnapshotCalculator {
     async get(account: Account, numOfDays: number, numOfDaysToPredict: number, userId: string):Promise<SnapshotDto> {
@@ -56,22 +57,33 @@ export class SnapshotCalculator {
 
       validDates.forEach(date=> {
         const txnOnThisDate =snapshotSettings.scheduledTransactions.filter(sett=> sett.date === date.getDate());
-        txnOnThisDate.forEach(setting=> {
+        txnOnThisDate.forEach(async setting=> {
           switch(setting.type) {
             case "adjustment":
               balance += setting.amount;
               result.push(SnapshotBalance.build(new Date(date), balance, setting.amount, setting.description, true));
               break;
             case "transfer":
-              //todo
+              const txnAmount = await this.predictTransferAmount(setting, date);
+              balance += txnAmount;
+              result.push(SnapshotBalance.build(new Date(date), txnAmount, balance,  setting.description, true));
               break;
           }
         })
       });
 
       return result;
-    }
+  }
 
+
+  async predictTransferAmount(setting: AccountSnapshotScheduledTransactionsSettings, date: Date): Promise<number> {
+    setting.linked_account_id
+
+    const estimatedStatementDate = date;
+    estimatedStatementDate.setDate(estimatedStatementDate.getDate() - setting.gracePeriod);
+
+    return ( await new BalanceDal().closestForDate(setting.linked_account_id, estimatedStatementDate)).current;
+  }
 
   private getDateRange(startDate: Date, endDate: Date): Date[] {
     const dates: Date[] = [];

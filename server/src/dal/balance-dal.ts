@@ -74,11 +74,13 @@ export class BalanceDal {
     })
   }
 
-  async calcBalanceOnDate(accountId: string, date: Date) {
+  async calcBalanceOnDate(accountId: string, date: Date, accountType: string) {
     const balance = await this.closestForDate(accountId, date);
     const txns = await new TransactionDal().getForAccountBetweenDates(accountId, date, new Date(balance.date));
 
-    // is this different for credit and depositary accounts?
+    if (accountType ==='credit') {
+      balance.current = -1 * balance.current;
+    }
     return balance.current + txns.map(txn=> txn.amount).reduce((prev, curr)=> curr+prev, 0);
   }
 }
