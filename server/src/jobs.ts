@@ -4,6 +4,7 @@ import { BalanceDal } from './dal/balance-dal';
 import { TransactionDal } from './dal/transactions-dal';
 import { PlaidDal } from './plaid-dal'
 import { BalanceDto } from '../../shared/models/balance-dto'
+import { Formatter } from '../../shared/utils/formatter';
 
 export class Transactions {
     async saveToDb() {
@@ -13,7 +14,7 @@ export class Transactions {
         const transactionDal = new TransactionDal()
         const plaidDal = new PlaidDal();
         const balanceDal = new BalanceDal();
-        const today = new Date().toISOString().substring(0, 10);
+        const today = Formatter.toISODateString(new Date());
         netFlowUsers.forEach(async user =>
             user.banks.forEach(async bank => {
                 const txnsAndAccounts = await plaidDal.fetchTransactions(bank.token);
@@ -62,5 +63,7 @@ export class Maintennce {
 }
 
 dotenv.config();
-new Transactions().saveToDb();
+// new Transactions().saveToDb();
 // new Maintennce().copyDynamoDbTables();
+
+new BalanceDal().calcBalanceOnDate('wbwVjAPPDvsoqyXMDaxVTP9NN46Bx6fLPoNAv', new Date('2020-12-03')).then(data=>console.log(data))

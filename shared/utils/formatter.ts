@@ -4,4 +4,8 @@ export class Formatter {
         return formatter.format(value);
     }
 
+    public static toISODateString(date: Date) {
+        return date.toISOString().substring(0,10);
+    }
+
 }

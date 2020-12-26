@@ -1,5 +1,7 @@
 const AWS = require('aws-sdk');
 import {BalanceDto} from '../../../shared/models/balance-dto'
+import { Formatter } from '../../../shared/utils/formatter';
+import { TransactionDal } from './transactions-dal';
 
 export class BalanceDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
@@ -45,6 +47,39 @@ export class BalanceDal {
         }
       });
     })
+  }
+  closestForDate(accountId: string, date: Date): Promise<BalanceDto> {
+    return new Promise((resolve, reject) => {
+      const params = {
+        TableName: process.env.BALANCE_DYNAMODB_TABLE,
+        KeyConditionExpression: 'account_id = :accountId and #dateAttr >= :dateValue ',
+        ExpressionAttributeValues: {
+          ":accountId": accountId, 
+          ":dateValue": Formatter.toISODateString(date)
+        },
+        ExpressionAttributeNames: {
+          "#dateAttr": "date"
+        },
+        Limit: 1
+      };
+
+      this.dynamoDb.query(params, function (err: any, data: any) {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          resolve(data.Items[0]);
+        }
+      });
+    })
+  }
+
+  async calcBalanceOnDate(accountId: string, date: Date) {
+    const balance = await this.closestForDate(accountId, date);
+    const txns = await new TransactionDal().getForAccountBetweenDates(accountId, date, new Date(balance.date));
+
+    // is this different for credit and depositary accounts?
+    return balance.current + txns.map(txn=> txn.amount).reduce((prev, curr)=> curr+prev, 0);
   }
 }
 

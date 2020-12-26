@@ -1,4 +1,4 @@
-import { Formatter } from "@/utils/formatter";
+import { Formatter } from "../../../shared/utils/formatter"
 import { inject } from "vue";
 import { Vue } from "vue-class-component";
 

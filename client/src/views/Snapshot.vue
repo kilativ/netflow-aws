@@ -12,7 +12,7 @@ import { Prop, Watch } from "vue-property-decorator";
 import { SnapshotBalance, SnapshotDto } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
-import { Formatter } from '../utils/formatter'
+import { Formatter } from '../../../shared/utils/formatter'
 
 export default class SnapshotView extends NetFlowVue {
   @Prop(String) accountId!: string;
@@ -57,11 +57,13 @@ export default class SnapshotView extends NetFlowVue {
         tooltips: {
           displayColors: false,
           callbacks: {
+            title: function(tooltipItems,data) {
+              return new Date(tooltipItems[0].label as string).toDateString();
+            },
             label: function (tooltipItems, data) {
               const item = tooltipItems.datasetIndex === 0?  current[tooltipItems.index as number]: future[tooltipItems.index as number];
               return [
                 item.notes,
-                new Date(item.date).toDateString(),
                 `amount: ${formatter.currencyUSD(item.transactionAmount)}`,
                 `balance: ${formatter.currencyUSD(item.balance)}`,
               ];

@@ -26,7 +26,7 @@ import gAuthPlugin from "vue3-google-oauth2";
 import { NetFlowPlaidBankLink, NetFlowUser} from "../../../shared/models/account-dto";
 import { inject } from "vue";
 import { NetFlowVue } from "./NetFlowBaseVue";
-import { Formatter } from "../utils/formatter";
+import { Formatter } from '../../../shared/utils/formatter'
 
 export default class AccountView extends NetFlowVue {
   private list: NetFlowPlaidBankLink[] = [];
