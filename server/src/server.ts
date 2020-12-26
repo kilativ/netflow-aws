@@ -6,9 +6,9 @@ import path from 'path';
 import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
 import { AccountDal } from './dal/account-dal';
-import { google } from 'googleapis';
 import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotCalculator } from './snapshot-calculator';
+import  {OAuth2Client} from 'google-auth-library';
 
 dotenv.config();
 
@@ -54,29 +54,13 @@ const validateUser = function (req: any, res: any, next: any) {
   } ).catch(()=>res.status(401).json("not authorized"))
 };
 
-const getUser = function (req: { headers: { [x: string]: string; }; }) : Promise<string> {
+const getUser = async function (req: { headers: { [x: string]: string; }; }) : Promise<string> {
   let token = req.headers["authorization"] as string;
   token = token.substr(7); // bearer 
 
-  var OAuth2 = google.auth.OAuth2;
-  var oauth2Client = new OAuth2();
-  oauth2Client.setCredentials({ access_token: token });
-  var oauth2 = google.oauth2({
-    auth: oauth2Client,
-    version: 'v2'
-  });
-
-  return new Promise((resolve, reject) => {
-    oauth2.userinfo.get(
-      function (err, googlResponse) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(googlResponse.data.email)
-        }
-      });
-  });
-
+  const newClient = new OAuth2Client();
+  const tokenInfo = await newClient.getTokenInfo(token);
+  return tokenInfo.email;
 }
 
 app.get('/s/api/user'
