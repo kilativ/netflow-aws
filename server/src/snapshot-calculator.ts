@@ -6,8 +6,12 @@ import { AccountDal } from './dal/account-dal';
 import { AccountSnapshotScheduledTransactionsSettings } from '../../shared/models/account-dto';
 
 export class SnapshotCalculator {
-    async get(account: Account, numOfDays: number, numOfDaysToPredict: number, userId: string):Promise<SnapshotDto> {
+  user: import("d:/dev/netflow/shared/models/account-dto").NetFlowUser;
 
+    public async get(account: Account, numOfDays: number, numOfDaysToPredict: number, userId: string):Promise<SnapshotDto> {
+
+      this.user = (await new AccountDal().get(userId));
+      
       const results: SnapshotBalance[]= [];
       const mult = (account.type === 'credit')? -1: 1;
 
@@ -40,13 +44,12 @@ export class SnapshotCalculator {
 
       return {
         account: account, 
-        balances:  [... results, ... await this.getPredictedTransactions(account.account_id, userId, new Date(latestBalances.date), lastDateToPredict, curBalance)]
+        balances:  [... results, ... await this.getPredictedTransactions(account.account_id, new Date(latestBalances.date), lastDateToPredict, curBalance)]
       };
     }
     
-    async getPredictedTransactions(account_id: string, userId: string, startDate: Date, endDate: Date, balance: number ): Promise< SnapshotBalance[]> {
-
-      const snapshotSettings = (await new AccountDal().get(userId)).settings.accountSnapshots.find(acct=>acct.account_id === account_id);
+    private async getPredictedTransactions(account_id: string, startDate: Date, endDate: Date, balance: number ): Promise< SnapshotBalance[]> {
+      const snapshotSettings = this.user.settings.accountSnapshots.find(acct=>acct.account_id === account_id);
       let result: SnapshotBalance[] = [];
 
       if (!snapshotSettings || !snapshotSettings.scheduledTransactions || snapshotSettings.scheduledTransactions.length === 0) {
@@ -55,34 +58,36 @@ export class SnapshotCalculator {
 
       const validDates: Date[] = this.getDateRange(startDate, endDate);
 
-      validDates.forEach(date=> {
-        const txnOnThisDate =snapshotSettings.scheduledTransactions.filter(sett=> sett.date === date.getDate());
-        txnOnThisDate.forEach(async setting=> {
-          switch(setting.type) {
+      for (const date of validDates) {
+        const scheduledOnThisDate =snapshotSettings.scheduledTransactions.filter(sett=> sett.date === date.getDate());
+        for (const scheduled of scheduledOnThisDate) {
+          switch(scheduled.type) {
             case "adjustment":
-              balance += setting.amount;
-              result.push(SnapshotBalance.build(new Date(date), balance, setting.amount, setting.description, true));
+              balance += scheduled.amount;
+              result.push(SnapshotBalance.build(date, balance, scheduled.amount, scheduled.description, true));
               break;
             case "transfer":
-              const txnAmount = await this.predictTransferAmount(setting, date);
+              const txnAmount = await this.predictTransferAmount(scheduled, date);
               balance += txnAmount;
-              result.push(SnapshotBalance.build(new Date(date), txnAmount, balance,  setting.description, true));
+              result.push(SnapshotBalance.build(date, balance, txnAmount,  scheduled.description, true));
               break;
           }
-        })
-      });
+        }
+      }
 
       return result;
   }
 
-
-  async predictTransferAmount(setting: AccountSnapshotScheduledTransactionsSettings, date: Date): Promise<number> {
-    setting.linked_account_id
-
-    const estimatedStatementDate = date;
+  private async predictTransferAmount(setting: AccountSnapshotScheduledTransactionsSettings, date: Date): Promise<number> {
+    const estimatedStatementDate = new Date(date);
     estimatedStatementDate.setDate(estimatedStatementDate.getDate() - setting.gracePeriod);
 
-    return ( await new BalanceDal().closestForDate(setting.linked_account_id, estimatedStatementDate)).current;
+    const linkedAccount = this.user.banks
+      .find(b=>b.accounts.map(a=>a.account_id).indexOf(setting.linked_account_id)>=0)
+      .accounts.find(a=>a.account_id === setting.linked_account_id);
+
+    const predictedAmount =  await new BalanceDal().calcBalanceOnDate( setting.linked_account_id, estimatedStatementDate, linkedAccount.type);
+    return predictedAmount;
   }
 
   private getDateRange(startDate: Date, endDate: Date): Date[] {

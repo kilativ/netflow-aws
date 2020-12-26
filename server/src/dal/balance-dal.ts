@@ -48,7 +48,14 @@ export class BalanceDal {
       });
     })
   }
-  closestForDate(accountId: string, date: Date): Promise<BalanceDto> {
+
+  /**
+   * Returns the balance on a day specified or if does not exist and the closes day in the future
+   * 
+   * @param accountId 
+   * @param date 
+   */
+  private closestForDate(accountId: string, date: Date): Promise<BalanceDto> {
     return new Promise((resolve, reject) => {
       const params = {
         TableName: process.env.BALANCE_DYNAMODB_TABLE,
@@ -74,9 +81,20 @@ export class BalanceDal {
     })
   }
 
+  /**
+   * Calculates the balance on any day by finding the closes balance and backtracking using transactions
+   * @param accountId 
+   * @param date 
+   * @param accountType 
+   */
   async calcBalanceOnDate(accountId: string, date: Date, accountType: string) {
     const balance = await this.closestForDate(accountId, date);
-    const txns = await new TransactionDal().getForAccountBetweenDates(accountId, date, new Date(balance.date));
+    const balanceDate = new Date(balance.date);
+    if (balanceDate === date) {
+      return balance.current;
+    }
+
+    const txns = await new TransactionDal().getForAccountBetweenDates(accountId, date, balanceDate);
 
     if (accountType ==='credit') {
       balance.current = -1 * balance.current;
