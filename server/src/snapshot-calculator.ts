@@ -19,11 +19,13 @@ export class SnapshotCalculator {
       const balances =  await new BalanceDal().getAllForAccount(accountId);
       const latestBalances= balances.reduce((prev,current)=> (prev.date > current.date)? prev: current);
       const latestBalanceAcount = latestBalances.current * mult;
-      let allTxns = await new TransactionDal().getAllForAccount(accountId);
-    
+
+
       const lowerLimitDate = new Date(latestBalances.date);
       lowerLimitDate.setDate(lowerLimitDate.getDate() - numOfDays);
 
+      let allTxns = await new TransactionDal().getForAccountBetweenDates(accountId, lowerLimitDate, new Date(latestBalances.date));
+    
       allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimitDate).sort((a,b)=> {return a.date.localeCompare(b.date);});
     
       const sumOfAllAmounts = allTxns.map(txn=>txn.amount).reduce((t1,t2)=>t1+t2, 0);
@@ -83,9 +85,11 @@ export class SnapshotCalculator {
     estimatedStatementDate.setDate(estimatedStatementDate.getDate() - setting.gracePeriod);
 
     const linkedAccount = this.user.banks
-      .find(b=>b.accounts.map(a=>a.account_id).indexOf(setting.linked_account_id)>=0)
-      .accounts.find(a=>a.account_id === setting.linked_account_id);
+      .find(b=>b.accounts.map(a=>a.account_id).indexOf(setting.linked_account_id)>=0)?.accounts?.find(a=>a.account_id === setting.linked_account_id);
 
+    if (!linkedAccount) {
+      return 0;
+    }
     const predictedAmount =  await new BalanceDal().calcBalanceOnDate( setting.linked_account_id, estimatedStatementDate, linkedAccount.type);
     return predictedAmount;
   }

@@ -5,8 +5,6 @@ import { Formatter } from '../../../shared/utils/formatter';
 export class TransactionDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-
-
   getForAccountBetweenDates(accountId: string, dateFrom: Date, dateTo: Date) : Promise<Transaction[]>{
     return new Promise((resolve, reject) => {
       const params = {
@@ -23,6 +21,7 @@ export class TransactionDal {
         }
       };
 
+      // todo check if alld ata was returned
       this.dynamoDb.query(params, function (err: any, data: any) {
         if (err) {
           console.error(err);
@@ -64,16 +63,20 @@ export class TransactionDal {
     });
   }
 
-  getAllForAccount(accountId: string): Promise<Transaction[]> {
+  getAllForAccount(accountId: string, /*offset: number, */ pageSize:number): Promise<Transaction[]> {
     return new Promise((resolve, reject) => {
       const params = {
         TableName: process.env.TAXN_DYNAMODB_TABLE,
+        IndexName: 'account-by-date',
+        Limit:pageSize,
+        ScanIndexForward: false,
         KeyConditionExpression: 'account_id = :accountId',
         ExpressionAttributeValues: {
           ":accountId": accountId
-        }
+        },
       };
 
+      // todo check if alld ata was returned
       this.dynamoDb.query(params, function (err: any, data: any) {
         if (err) {
           console.error(err);

@@ -91,7 +91,7 @@ app.get('/s/api/user'
 app.get('/s/api/transactions/:accountId'
   , validateAccount,
   function (req: any, res) {
-    new TransactionDal().getAllForAccount(req.params.accountId)
+    new TransactionDal().getAllForAccount(req.params.accountId, /* 0,*/ 50) // todo paging
     .then(txn=> res.send(txn))
     .catch(err => res.status(500).json(err));
   });

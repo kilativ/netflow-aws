@@ -15,8 +15,9 @@ export class Transactions {
         const plaidDal = new PlaidDal();
         const balanceDal = new BalanceDal();
         const today = Formatter.toISODateString(new Date());
-        netFlowUsers.forEach(async user =>
-            user.banks.forEach(async bank => {
+
+        for (const user of netFlowUsers) {
+            for (const bank of user.banks) {
                 const txnsAndAccounts = await plaidDal.fetchTransactions(bank.token);
 
                 // don't run it for a lot of transaction until batching is implemented in order not to exceed DynamoDB througput limits
@@ -32,9 +33,9 @@ export class Transactions {
 
                     balanceDal.update(balance);
                 })
-            })
-        )
-
+            }
+            
+        }
     }
 }
 
@@ -65,3 +66,10 @@ export class Maintennce {
 dotenv.config();
 new Transactions().saveToDb();
 // new Maintennce().copyDynamoDbTables();
+
+
+export const handler = async (event: any = {}): Promise<any> => {
+    dotenv.config();
+    await new Transactions().saveToDb();
+    return "All Good";
+}

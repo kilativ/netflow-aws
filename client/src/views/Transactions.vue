@@ -9,8 +9,6 @@
         <td>{{ txn.iso_currency_code }}</td>
         <td>{{ txn.amount }}</td>
         <td>{{ txn.category.join() }}</td>
-        <td>{{ txn.name }}</td>
-        <td>{{ txn.name }}</td>
       </tr>
     </table>
   </div>
