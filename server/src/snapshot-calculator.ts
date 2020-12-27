@@ -85,7 +85,7 @@ export class SnapshotCalculator {
     const estimatedStatementDate = new Date(date);
     estimatedStatementDate.setDate(estimatedStatementDate.getDate() - setting.gracePeriod);
 
-    const linkedAccount = this.user.banks
+    const linkedAccount = this.user.banks.filter(b=>b.accounts)
       .find(b=>b.accounts.map(a=>a.account_id).indexOf(setting.linked_account_id)>=0)?.accounts?.find(a=>a.account_id === setting.linked_account_id);
 
     if (!linkedAccount) {
