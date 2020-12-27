@@ -1,4 +1,5 @@
 import { SnapshotBalance, SnapshotDto } from '../../shared/models/snapshot-dto';
+import { NetFlowUser } from '../../shared/models/account-dto';
 import { BalanceDal } from './dal/balance-dal';
 import { Account} from 'plaid';
 import { TransactionDal } from './dal/transactions-dal';
@@ -6,7 +7,7 @@ import { AccountDal } from './dal/account-dal';
 import { AccountSnapshotScheduledTransactionsSettings } from '../../shared/models/account-dto';
 
 export class SnapshotCalculator {
-  user: import("d:/dev/netflow/shared/models/account-dto").NetFlowUser;
+  user: NetFlowUser;
 
     public async get(account: Account, numOfDays: number, numOfDaysToPredict: number, userId: string):Promise<SnapshotDto> {
 
