@@ -2,6 +2,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import expressAsyncHandler from 'express-async-handler'
 import path from 'path';
 import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
@@ -65,32 +66,28 @@ const getUser = async function (req: { headers: { [x: string]: string; }; }) : P
 
 app.get('/s/api/user'
   , validateUser,
-  function (req: any, res) {
-    new AccountDal()
-      .get(req.user as string)
-      .then(data => res.send(data))
-      .catch(err => res.status(500).json(err));
-  });
+  expressAsyncHandler(async (req: any, res) => {
+    let dal = new AccountDal();
+    let data = await dal.get(req.user as string)
+    res.send(data);
+  })
+);
 
 app.get('/s/api/transactions/:accountId'
   , validateAccount,
-  function (req: any, res) {
-    new TransactionDal().getAllForAccount(req.params.accountId, /* 0,*/ 50) // todo paging
-    .then(txn=> res.send(txn))
-    .catch(err => res.status(500).json(err));
-  });
+  expressAsyncHandler(async (req: any, res) => {
+    let dal = new TransactionDal();
+    let txn = await dal.getAllForAccount(req.params.accountId, /* 0,*/ 50) // todo paging
+    res.send(txn)
+  })
+);
 
-
-app.get('/s/api/snapshot/:accountId', [validateUser, validateAccount], async function(req: any, res: any) {
-  try {
-    res.send(await new SnapshotCalculator().get(req.account, 45, 45, req.user));
-  } catch (e) { // not sure why global is not working yet.
-    res.status(500).send(e.message);
-  }
-});
-
-app.use((err:any, req:any, res:any, next:any) => {
-  res.status(err.status || 500);
-  res.end();
-});
+app.get('/s/api/snapshot/:accountId'
+  , [validateUser, validateAccount], 
+  expressAsyncHandler(async (req: any, res: any) => {
+    let calc = new SnapshotCalculator()
+    let snap = await calc.get(req.account, 45, 45, req.user);
+    res.send(snap)
+  })
+);
 
