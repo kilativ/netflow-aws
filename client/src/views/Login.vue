@@ -49,8 +49,16 @@ export default {
           this.$gAuth.instance.currentUser.get().getAuthResponse()
         );
 
+        let service = new AccountService();
         let access_token = this.$gAuth.instance.currentUser.get().getAuthResponse().access_token;
-        await new AccountService().addUserAccount(access_token);
+        let netflow_user = await service.getUserAccount(access_token);
+        if (!netflow_user) {
+          console.log('user not found adding new account')
+          netflow_user = await new AccountService().addUserAccount(access_token);
+          console.log(`added account for ${netflow_user.userId}`)
+        } else {
+          console.log(`signed in as ${netflow_user.userId}`)
+        }
 
       } catch (error) {
         //on fail do something

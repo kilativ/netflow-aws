@@ -82,10 +82,16 @@ app.post('/s/api/user'
   , validateUser,
   expressAsyncHandler(async (req: any, res) => {
     let dal = new AccountDal();
-    let user = new NetFlowUser();
-    user.userId = req.user;
-    user = await dal.addUser(user)
-    res.send(user);
+    let userid = req.user as string;
+    let user = await dal.get(userid);
+    if (!user) {
+      user = new NetFlowUser();
+      user.userId = userid;
+      user = await dal.addUser(user)
+      res.send(user);
+    } else {
+      throw Error(`user ${userid} already exists`)
+    }
   })
 );
 
