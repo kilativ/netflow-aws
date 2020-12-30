@@ -12,6 +12,7 @@
 
 <script>
 import { inject, toRefs } from "vue";
+import { AccountService } from "../services/account";
 
 export default {
   name: "Login",
@@ -47,6 +48,9 @@ export default {
           "getAuthResponse",
           this.$gAuth.instance.currentUser.get().getAuthResponse()
         );
+
+        let access_token = this.$gAuth.instance.currentUser.get().getAuthResponse().access_token;
+        await new AccountService().addUserAccount(access_token);
 
       } catch (error) {
         //on fail do something

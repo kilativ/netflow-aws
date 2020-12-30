@@ -6,6 +6,19 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 
 export class AccountService {
 
+    async addUserAccount(accessToken: string) {
+        axios.interceptors.response.use(res => { // todo make this global
+            return res;
+        }, function (error) {
+            console.log(error)
+        })
+
+        const response = await axios.post<NetFlowUser>("/s/api/user", null, {headers: {
+            'Authorization': `Bearer ${accessToken}`
+            }});
+        return response.data;
+    }
+
     async getUserAccount(accessToken: string) {
         axios.interceptors.response.use(res => { // todo make this global
             return res;

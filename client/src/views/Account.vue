@@ -2,6 +2,8 @@
   <div class="account">
     <h1>This is my account page</h1>
     <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
+    <h2>IsAuthorized: {{ Vue3GoogleOauth.isAuthorized }}</h2>
+    <h3 v-if="user">signed user: {{user.userId}}</h3>
 
     <h2>Accounts</h2>
     <div v-for="bank in list" :key="bank.id">
@@ -30,14 +32,15 @@ import { Formatter } from '../../../shared/utils/formatter'
 
 export default class AccountView extends NetFlowVue {
   private list: NetFlowPlaidBankLink[] = [];
+  private user: NetFlowUser = new NetFlowUser();
 
   async loadData() {
     console.log("mounted");
-    const user = await new AccountService().getUserAccount(
+    this.user = await new AccountService().getUserAccount(
       this.getAccessToken()
     );
-    console.log(user);
-    this.list = user.banks;
+    console.log(this.user);
+    this.list = this.user.banks;
   }
 
   @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
