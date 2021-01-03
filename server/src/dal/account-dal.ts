@@ -5,19 +5,21 @@ import {Account} from 'plaid';
 export class AccountDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-  addUser(account: NetFlowUser) {
-    // todo convert to promise
-    const params = {
-      TableName: process.env.ACCT_DYNAMODB_TABLE,
-      Item: account
-    };
+  addUser(account: NetFlowUser): Promise<NetFlowUser> {
+    return new Promise((resolve, reject) => {
+      const params = {
+        TableName: process.env.ACCT_DYNAMODB_TABLE,
+        Item: account
+      };
 
-    this.dynamoDb.put(params, (error: any, result: any) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-    });
+      this.dynamoDb.put(params, (err: any, result: any) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(account)
+        }
+      });
+    })
   }
 
   async updateBankAccounts (userId: string, bankId: string, accounts: Account[]) {

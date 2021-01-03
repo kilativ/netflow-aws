@@ -10,8 +10,13 @@ import { AccountDal } from './dal/account-dal';
 import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotCalculator } from './snapshot-calculator';
 import  {OAuth2Client} from 'google-auth-library';
+import { NetFlowUser } from '../../shared/models/account-dto';
 
-dotenv.config();
+let error;
+( { error } = dotenv.config());
+if (error) {
+  console.log(error)
+}
 
 const app = express();
 app.set('port', process.env.PORT || 3000);
@@ -70,6 +75,23 @@ app.get('/s/api/user'
     let dal = new AccountDal();
     let data = await dal.get(req.user as string)
     res.send(data);
+  })
+);
+
+app.post('/s/api/user'
+  , validateUser,
+  expressAsyncHandler(async (req: any, res) => {
+    let dal = new AccountDal();
+    let userid = req.user as string;
+    let user = await dal.get(userid);
+    if (!user) {
+      user = new NetFlowUser();
+      user.userId = userid;
+      user = await dal.addUser(user)
+      res.send(user);
+    } else {
+      throw Error(`user ${userid} already exists`)
+    }
   })
 );
 
