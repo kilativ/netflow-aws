@@ -1,7 +1,9 @@
 const AWS = require('aws-sdk');
 import { NetFlowUser } from '../../../shared/models/account-dto'
 import { Account } from 'plaid';
-
+import { Transactions } from "../transactions";
+import { Formatter } from '../../../shared/utils/formatter';
+import { v4 as uuid } from 'uuid';
 export class AccountDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -16,20 +18,31 @@ export class AccountDal {
           "#bank": "banks"
         },
         ExpressionAttributeValues: {
-          ":vals": [{ nickname: 'todo', active: true, token: access_token }]
+          ":vals": [{ nickname: 'todo', active: true, token: access_token, id:uuid() }]
         },
         ReturnValues: "UPDATED_NEW"
       };
 
-      this.dynamoDb.update(params, (err: any, result: any) => {
+      this.dynamoDb.update(params, async (err: any, result: any) => {
         if (err) {
           console.log(err);
           reject(err);
         } else {
+          // get transactions for this bank
+          await this.getTransactionsForBank(userId, access_token);
           resolve(result)
         }
       });
     })
+  }
+  async getTransactionsForBank(userId: string, access_token: string) {
+    const user = await this.get(userId);
+    const bankFound = user.banks.find(b => b.token === access_token);
+    if (bankFound) {
+
+      const today = Formatter.toISODateString(new Date());
+      await new Transactions(this).processUserBank(userId, bankFound, today);
+    }
   }
 
   createAttributeIfDoesNotExist(userId: string, attributeName: string) {
@@ -41,14 +54,14 @@ export class AccountDal {
         ConditionExpression: 'attribute_not_exists(#a)',
         ExpressionAttributeNames: {
           '#a': attributeName
-        },  ExpressionAttributeValues: {
+        }, ExpressionAttributeValues: {
           ":vals": []
         },
       }, (err: any, result: any) => {
         if (err) {
           if (err.code === 'ConditionalCheckFailedException') {
             resolve(null);
-          } else  {
+          } else {
             console.log(err);
             reject(err);
           }
