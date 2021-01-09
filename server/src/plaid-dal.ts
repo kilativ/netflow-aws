@@ -1,5 +1,5 @@
 import moment from 'moment';
-import plaid, { TransactionsResponse } from 'plaid';
+import plaid, { TokenResponse, TransactionsResponse } from 'plaid';
 
 export class PlaidDal {
     private PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
@@ -15,7 +15,18 @@ export class PlaidDal {
         }
       });
 
+      exchangePublicToken(publicToken: any) {
+        return new Promise<TokenResponse>((resolve, reject)=> {
+          this.client.exchangePublicToken(publicToken, function (error, tokenResponse) {
+            if (error != null) {
+              reject(error);
+            }
+            resolve(tokenResponse);
+          });
+        })
+      }
 
+          
     async updateLink(accessToken: string, userId: string) { // call when ITEM_LOGIN_REQUIRED recieved. onse link token generated JavaScript PLaid UI needs to create a popup to re-login
         const linkTokenResponse = await this.client.createLinkToken({
           user: {
