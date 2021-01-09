@@ -108,7 +108,7 @@ app.get('/s/api/snapshot/:accountId'
   , [validateUser, validateAccount], 
   expressAsyncHandler(async (req: any, res: any) => {
     let calc = new SnapshotCalculator()
-    let snap = await calc.get(req.account, 45, 45, req.user);
+    let snap = await calc.get(req.account, 60, 30, req.user);
     res.send(snap)
   })
 );

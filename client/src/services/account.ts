@@ -1,8 +1,9 @@
 import axios from "axios";
+import { Transaction } from "plaid";
 import { NetFlowUser } from '../../../shared/models/account-dto'
 import { SnapshotDto } from '../../../shared/models/snapshot-dto';
 
-axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL?? "http://localhost:3000";
 
 export class AccountService {
 
@@ -32,7 +33,7 @@ export class AccountService {
         return response.data;
     }
 
-    async getAccountTransactions(accessToken: string, accountId: string) {
+    async getAccountTransactions(accessToken: string, accountId: string): Promise<Transaction[]> {
         axios.interceptors.response.use(res => { // todo make this global
             return res;
         }, function (error) {

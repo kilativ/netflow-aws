@@ -27,7 +27,7 @@ export class SnapshotCalculator {
 
       let allTxns = await new TransactionDal().getForAccountBetweenDates(accountId, lowerLimitDate, new Date(latestBalances.date));
     
-      allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimitDate).sort((a,b)=> {return a.date.localeCompare(b.date);});
+      allTxns = allTxns.filter(txn=> txn.date < latestBalances.date && new Date(txn.date) >= lowerLimitDate && !txn.pending).sort((a,b)=> {return a.date.localeCompare(b.date);});
     
       const sumOfAllAmounts = allTxns.map(txn=>txn.amount).reduce((t1,t2)=>t1+t2, 0);
       const startingBalance = latestBalanceAcount + sumOfAllAmounts;
