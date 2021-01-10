@@ -82,9 +82,9 @@ app.get('/s/api/user'
 app.post('/s/api/user/account', validateUser, expressAsyncHandler(async(request:any, res)=> {
   const plaidDal = new PlaidDal();
   const tokenResponse = await plaidDal.exchangePublicToken(request.body.public_token);
-  // save token response as new bank
+  const bankInfo = await plaidDal.getBankInfo(tokenResponse.access_token);
 
-  await new AccountDal().addBankToUser(request.user as string, tokenResponse.access_token);
+  await new AccountDal().addBankToUser(request.user as string, tokenResponse.access_token, bankInfo);
 
   console.log(tokenResponse);
   res.send('ok');

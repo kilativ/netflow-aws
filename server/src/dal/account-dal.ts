@@ -1,13 +1,13 @@
 const AWS = require('aws-sdk');
 import { NetFlowUser } from '../../../shared/models/account-dto'
-import { Account } from 'plaid';
+import { Account, Institution } from 'plaid';
 import { Transactions } from "../transactions";
 import { Formatter } from '../../../shared/utils/formatter';
 import { v4 as uuid } from 'uuid';
 export class AccountDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
 
-  addBankToUser(userId: string, access_token: string) {
+  addBankToUser(userId: string, access_token: string, bankInfo: Institution) {
     return new Promise(async (resolve, reject) => {
       await this.createAttributeIfDoesNotExist(userId, 'banks');
       const params = {
@@ -18,7 +18,7 @@ export class AccountDal {
           "#bank": "banks"
         },
         ExpressionAttributeValues: {
-          ":vals": [{ nickname: 'todo', active: true, token: access_token, id:uuid() }]
+          ":vals": [{ nickname: bankInfo.name, active: true, token: access_token, id:uuid() }]
         },
         ReturnValues: "UPDATED_NEW"
       };

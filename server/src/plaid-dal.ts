@@ -1,5 +1,5 @@
 import moment from 'moment';
-import plaid, { TokenResponse, TransactionsResponse } from 'plaid';
+import plaid, { TokenResponse, TransactionsResponse,Institution } from 'plaid';
 
 export class PlaidDal {
     private PLAID_CLIENT_ID = process.env.PLAID_CLIENT_ID;
@@ -64,5 +64,25 @@ export class PlaidDal {
 
         originalResponse.transactions = transactions;
         return originalResponse;
+    }
+
+    public getBankInfo(accessToken: string):Promise<Institution> {
+
+      const plaidClient = this.client;
+      return new Promise<Institution>((resolve, reject)=> {
+        plaidClient.getItem(accessToken, function (error, itemResponse) {
+          if (error != null) {
+            reject(error);
+          }
+          plaidClient.getInstitutionById(itemResponse.item.institution_id, function (err:any, instRes:any) {
+            if (err != null) {
+              reject(err);
+            } else {
+              resolve(instRes.institution);
+            }
+          });
+        });
+      })
+
     }
 }
