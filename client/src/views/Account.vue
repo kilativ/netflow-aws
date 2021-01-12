@@ -12,7 +12,7 @@
     <div class="flex flex-wrap">
             
       <div class="w-full md:w-1/1 xl:w-1/2 p-6"  v-for="bank in list" :key="bank.id">
-        <div class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 rounded-lg shadow-xl p-5">
             <div class="flex-1 text-right md:text-center">
               <h4 class="font-bold text-3xl">
                 {{ bank.nickname }}

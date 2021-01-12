@@ -5,11 +5,11 @@
         <div class="flex flex-wrap items-center">
             <div class="flex flex-shrink md:w-2/3 justify-center md:justify-start text-white">
                 <a href="#">
-                    <span class="text-xl pl-2"><i class="em em-money_with_wings"></i></span>
+                    <span class="text-xl pl-2"><i class="em em-money_with_wings m-2"></i><span class="px-2">NetFlow</span></span>
                 </a>
             </div>
             <div class="flex w-full pt-2 content-center justify-between md:w-1/3 md:justify-end">
-              <div class="md:text-gray-400 p-">Hello User</div>
+              <div class="md:text-gray-400 px-3">Hello User</div>
             </div>
         </div>
     </nav>
