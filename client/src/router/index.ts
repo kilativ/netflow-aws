@@ -17,7 +17,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Account.vue')
   },
   {
-    path: '/transactions/:accountId',
+    path: '/account/:accountId/transactions',
     props: true,
     component: TransactionsView
   },

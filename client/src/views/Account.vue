@@ -33,7 +33,7 @@
                           <tbody>
                               <tr v-for="account in bank.accounts" :key="account.account_id">
                                   <td class="px-1">
-                                    <a class="underline" v-bind:href="'/transactions/' + account.account_id">{{account.official_name ?? account.name}}</a>
+                                    <a class="underline" v-bind:href="`/account/${account.account_id}/transactions/`">{{account.official_name ?? account.name}}</a>
                                   </td>
                                   <td class="px-1">{{ account.mask }}</td>
                                   <td class="px-1">{{ account.type }} - {{ account.subtype }}</td>

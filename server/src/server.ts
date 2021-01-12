@@ -107,7 +107,7 @@ app.post('/s/api/user'
   })
 );
 
-app.get('/s/api/transactions/:accountId'
+app.get('/s/api/account/:accountId/transactions'
   , validateAccount,
   expressAsyncHandler(async (req: any, res) => {
     let dal = new TransactionDal();

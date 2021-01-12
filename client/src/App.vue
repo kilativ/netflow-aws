@@ -55,23 +55,29 @@ export default class App extends Vue {
         {name:"Google Login", link:"/login", class:"border-gray-800 hover:border-red-500", icon:"fa-wallet", color:"red-500"},
     ]
 
+    isCurrentSelection(item: MenuItem): boolean {
+        return item.name !== 'Home'? this.$route.path.indexOf(item.link) === 0 : this.$route.path === item.link;
+    }
+
     getItemClass(item: MenuItem) {
-        return (item.link === this.$route.path)? `border-${item.color}`: `border-gray-800 hover:border-${item.color}`;
+        console.log(item.link);
+        console.log(this.$route.path);
+        return this.isCurrentSelection(item)? `border-${item.color}`: `border-gray-800 hover:border-${item.color}`;
     }
 
     getIconClass(item: MenuItem) {
-        return (item.link === this.$route.path)? `${item.icon} text-${item.color}`: item.icon;
+        return this.isCurrentSelection(item)? `${item.icon} text-${item.color}`: item.icon;
     }
 }
 
 export class MenuItem {
-    name: string;
-    link: string;
-    class: string;
-    color: string;
-    icon: string;
+    name?: string;
+    link?: string;
+    class?: string;
+    color?: string;
+    icon?: string;
 }
 </script>
 
 <style scoped lang="scss">
-</style>
+</style> 
