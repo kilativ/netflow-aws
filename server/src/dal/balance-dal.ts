@@ -89,6 +89,9 @@ export class BalanceDal {
    */
   async calcBalanceOnDate(accountId: string, date: Date, accountType: string) {
     const balance = await this.closestForDate(accountId, date);
+    if (!balance) {
+      return 0;
+    }
     const balanceDate = new Date(balance.date);
     if (balanceDate === date) {
       return balance.current;

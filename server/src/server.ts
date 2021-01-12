@@ -11,6 +11,7 @@ import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotCalculator } from './snapshot-calculator';
 import  {OAuth2Client} from 'google-auth-library';
 import { NetFlowUser } from '../../shared/models/account-dto';
+import { PlaidDal } from './plaid-dal';
 
 let error;
 ( { error } = dotenv.config());
@@ -78,6 +79,17 @@ app.get('/s/api/user'
   })
 );
 
+app.post('/s/api/user/account', validateUser, expressAsyncHandler(async(request:any, res)=> {
+  const plaidDal = new PlaidDal();
+  const tokenResponse = await plaidDal.exchangePublicToken(request.body.public_token);
+  const bankInfo = await plaidDal.getBankInfo(tokenResponse.access_token);
+
+  await new AccountDal().addBankToUser(request.user as string, tokenResponse.access_token, bankInfo);
+
+  console.log(tokenResponse);
+  res.send('ok');
+}))
+
 app.post('/s/api/user'
   , validateUser,
   expressAsyncHandler(async (req: any, res) => {
@@ -108,7 +120,7 @@ app.get('/s/api/snapshot/:accountId'
   , [validateUser, validateAccount], 
   expressAsyncHandler(async (req: any, res: any) => {
     let calc = new SnapshotCalculator()
-    let snap = await calc.get(req.account, 45, 45, req.user);
+    let snap = await calc.get(req.account, 60, 30, req.user);
     res.send(snap)
   })
 );

@@ -19,13 +19,17 @@
 import { Options, Vue } from 'vue-class-component';
 import axios, { AxiosResponse } from "axios";
 import PlaidLink from '../views/PlaidLink.vue';
+import { inject } from 'vue';
+import { AccountService } from '../services/account';
 
 @Options({
   components: {
     PlaidLink,
   },
 })
-export default class App extends Vue {
+export default class Plaid extends Vue {
+  private $gAuth: any;
+  private Vue3GoogleOauth: any = inject("Vue3GoogleOauth");
 
   publicToken = '';
   accessToken = '';
@@ -33,12 +37,11 @@ export default class App extends Vue {
 
   async onSuccess(token: string) {
     this.publicToken = token;
-    const tokenResponse = await axios.post('/api/set_access_token',
-    {
-      public_token: this.publicToken
-    });
-    this.accessToken = tokenResponse.data.access_token;
-    this.itemId = tokenResponse.data.item_id;
+    const accessCode = this.$gAuth.instance.currentUser.get().getAuthResponse().access_token;
+   
+   const tokenResponse= await new AccountService().addBankAccountToUser(accessCode,token);
+    this.accessToken = tokenResponse;
+    this.itemId = tokenResponse;
   }
 }
 </script>

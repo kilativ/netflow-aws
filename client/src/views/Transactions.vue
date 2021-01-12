@@ -39,9 +39,9 @@ export default class TransactionsView extends Vue {
     const accessCode = this.$gAuth.instance.currentUser.get().getAuthResponse()
       .access_token;
 
-    this.transactions = await new AccountService().getAccountTransactions(
+    this.transactions = (await new AccountService().getAccountTransactions(
       accessCode,this.accountId
-    );
+    )).filter(txn=>!txn.pending);
   }
 
   @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
