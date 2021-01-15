@@ -111,7 +111,7 @@ app.get('/s/api/account/:accountId/transactions'
   , validateAccount,
   expressAsyncHandler(async (req: any, res) => {
     let dal = new TransactionDal();
-    let txn = await dal.getAllForAccount(req.params.accountId, /* 0,*/ 50) // todo paging
+    let txn = await dal.getAllForAccount(req.params.accountId) // todo paging
     res.send(txn)
   })
 );

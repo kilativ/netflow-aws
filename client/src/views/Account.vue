@@ -38,7 +38,7 @@
                                   <td class="px-1">{{ account.mask }}</td>
                                   <td class="px-1">{{ account.type }} - {{ account.subtype }}</td>
                                   <td class="text-right px-1">{{ formatter.currencyUSD(account.balances.current) }}</td>
-                                  <td class="text-center px-1"><a class="underline" v-bind:href="'/snapshot/' + account.account_id">view</a></td>
+                                  <td class="text-center px-1"><a class="underline" v-bind:href="`/account/${account.account_id}/snapshot`">view</a></td>
                               </tr>
                           </tbody>
                       </table>
