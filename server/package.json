@@ -13,7 +13,7 @@
     "build-ts": "tsc",
     "claudia-prep": "claudia generate-serverless-express-proxy --express-module dist/server/src/server-aws",
     "claudia-create": "claudia create --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
-    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1",
+    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
     "run-jobs": "ts-node-transpile-only ./src/jobs.ts",
     "run-server-quick": "ts-node-transpile-only ./src/server.ts",
     "copy-assets": "ts-node copyAssets.ts",
