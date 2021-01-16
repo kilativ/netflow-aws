@@ -41,6 +41,7 @@ Copy `lambda-env.json.sample` to  `lambda-env.json` and populate it with your en
 ### Create serverless install
 * Execute 
 ```
+npm run build-ts
 npm run claudia-create
 ```
 
@@ -52,6 +53,7 @@ This will create an execution user, api gateway and lambda for your app. Once co
 ### Update serverless install
 * Execute 
 ```
+npm run build-ts
 npm run claudia-update
 ```
 
