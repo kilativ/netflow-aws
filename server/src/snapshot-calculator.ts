@@ -42,12 +42,14 @@ export class SnapshotCalculator {
       results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalanceAcount, 0, 'current', false));
       results.push(SnapshotBalance.build(new Date(latestBalances.date), latestBalanceAcount, 0, 'current', true));
 
+      const firstDayToPredict = new Date();
+      firstDayToPredict.setDate(firstDayToPredict.getDate() + 1);
       const lastDateToPredict = new Date(latestBalances.date);
       lastDateToPredict.setDate(lastDateToPredict.getDate() + numOfDaysToPredict);
 
       return {
         account: account, 
-        balances:  [... results, ... await this.getPredictedTransactions(account.account_id, new Date(latestBalances.date), lastDateToPredict, curBalance)]
+        balances:  [... results, ... await this.getPredictedTransactions(account.account_id, firstDayToPredict, lastDateToPredict, curBalance)]
       };
     }
     

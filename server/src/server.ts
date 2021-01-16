@@ -20,7 +20,8 @@ if (error) {
 }
 
 const app = express();
-app.set('port', process.env.PORT || 3000);
+// app.set('port', process.env.PORT || 3000);
+export = app;
 app.use(cors());
 app.use(express.static(path.resolve(__dirname)));
 app.use(bodyParser.urlencoded({
@@ -33,6 +34,14 @@ PlaidRoutes.Add(app);
 
 app.get('/', (req, res) => {
   res.sendFile('./index.html', { root: __dirname });
+})
+
+app.get('/status', (req, res) => {
+  res.send('ok');
+})
+
+app.get('/test-env', (req, res) => {
+  res.send(process.env["TEST_PARAM"]);
 })
 
 const validateAccount = function (req: any, res: any, next: any) {
