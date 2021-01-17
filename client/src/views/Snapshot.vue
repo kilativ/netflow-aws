@@ -1,7 +1,30 @@
 <template>
-  <div style="width: 1000px; height: 600px">
-    <canvas ref="myChart" id="myChart"></canvas>
+<div>
+    
+    <div class="bg-gray-800 pt-3">
+      <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
+        <h3 class="font-bold pl-2">Account - Snapshot</h3>
+      </div>
+    </div>
+
+
+    <div class="flex flex-wrap">
+      <div class="w-full md:w-1/1 xl:w-1/1 p-6" >
+        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 rounded-lg shadow-xl p-5">
+            <div class="flex-1 text-right md:text-center">
+              <h4 class="font-bold text-3xl">
+                Snapshot
+              </h4>
+          </div>
+           <div class="p-5">
+              <canvas ref="myChart" id="myChart"></canvas>
+            </div>
+        </div>
+      </div>
+    IsInit: {{ Vue3GoogleOauth.isInit }}
   </div>
+
+</div>  
 </template>
 
 <script lang="ts">

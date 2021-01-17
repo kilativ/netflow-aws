@@ -16,3 +16,8 @@ http://localhost:3000
 
 ### plaid quickstart
 http://localhost:3000/quickstart
+
+### Tailwind NetFlow template
+https://www.tailwindtoolbox.com/templates/admin-template-demo.php
+### Tailwind Cheat Sheet
+https://nerdcave.com/tailwind-cheat-sheet

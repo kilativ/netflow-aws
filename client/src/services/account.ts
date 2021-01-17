@@ -61,7 +61,7 @@ export class AccountService {
             console.log(error)
         })
 
-        const response = await axios.get(`/s/api/transactions/${accountId}`, {
+        const response = await axios.get(`/s/api/account/${accountId}/transactions`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

@@ -63,12 +63,12 @@ export class TransactionDal {
     });
   }
 
-  getAllForAccount(accountId: string, /*offset: number, */ pageSize:number): Promise<Transaction[]> {
+  getAllForAccount(accountId: string): Promise<Transaction[]> {
     return new Promise((resolve, reject) => {
       const params = {
         TableName: process.env.TAXN_DYNAMODB_TABLE,
         IndexName: 'account-by-date',
-        Limit:pageSize,
+        // Limit:pageSize,
         ScanIndexForward: false,
         KeyConditionExpression: 'account_id = :accountId',
         ExpressionAttributeValues: {

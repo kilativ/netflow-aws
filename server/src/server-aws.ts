@@ -1,11 +1,12 @@
 import bodyParser from 'body-parser';
-import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import path from 'path';
 import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
 import { Routes } from './routes';
+import cors from 'cors';
+
 
 let error;
 ( { error } = dotenv.config());
@@ -14,9 +15,8 @@ if (error) {
 }
 
 const app = express();
-app.set('port', process.env.PORT || 3000);
 app.use(cors());
-app.use(express.static(path.resolve(__dirname)));
+// app.use(express.static(path.resolve(__dirname)));
 app.use(bodyParser.urlencoded({
   extended: false
 }))
@@ -25,3 +25,5 @@ app.use(bodyParser.json())
 
 Routes.Add(app);
 PlaidRoutes.Add(app);
+
+export = app;
