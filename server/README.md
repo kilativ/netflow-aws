@@ -36,7 +36,7 @@ Build artifacts are in dist/
 Follow https://claudiajs.com/tutorials/installing.html to install Claudia.js and setup AWS credentials
 
 ### Environment
-Copy `lambda-env.json.sample` to  `lambda-env.json` and populate it with your environment settings. Not that AWS keys are not needed.
+Copy `lambda-env.json.sample` to  `lambda-env.json` and populate it with your environment settings. Note that AWS keys are not needed. This variables will be setup on AWS Lambda
 
 ### Create serverless install
 * Execute 
