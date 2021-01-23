@@ -35,11 +35,6 @@ export class PlaidRoutes {
       }
     });
 
-
-    app.get('/quickstart', (_req, res, next) => {
-      res.sendFile('./views/plaid.html', { root: __dirname });
-    })
-
     app.post('/api/info', function (request, response, next) {
       response.json({
         item_id: ITEM_ID,
