@@ -9,21 +9,20 @@
     "package.json"
   ],
   "scripts": {
-    "build": "npm run webpack",
+    "build": "npm run build-tsc",
     "build-ts": "tsc",
     "claudia-prep": "claudia generate-serverless-express-proxy --express-module dist/server/src/server-aws",
     "claudia-create": "claudia create --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
     "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
     "run-jobs": "ts-node-transpile-only ./src/jobs.ts",
     "run-server-quick": "ts-node-transpile-only ./src/server.ts",
-    "serve": "node dist/server.js",
+    "serve": "node dist/server/src/server.js",
     "serve-debug": "nodemon --inspect dist/server.js",
     "start": "npm run serve",
     "watch": "npm run build-ts && npm run watch-all",
     "watch-all": "concurrently -k -p \"[{name}]\" -n \"TSC,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
     "watch-node": "nodemon dist/server/src/server.js",
-    "watch-ts": "tsc -w",
-    "webpack": "webpack"
+    "watch-ts": "tsc -w"
   },
   "dependencies": {
     "aws-sdk": "^2.804.0",
