@@ -35,11 +35,6 @@ export class PlaidRoutes {
       }
     });
 
-
-    app.get('/quickstart', (_req, res, next) => {
-      res.sendFile('./views/plaid.html', { root: __dirname });
-    })
-
     app.post('/api/info', function (request, response, next) {
       response.json({
         item_id: ITEM_ID,
@@ -378,15 +373,9 @@ export class PlaidRoutes {
       });
     });
 
-    const server = app.listen(app.get('port'), function () {
-      console.log(`Server running on http://localhost:${app.get('port')} in ${app.get('env')} mode`);
-      console.log('  Press CTRL-C to stop\n');
-    });
-
     const prettyPrintResponse = (response: any) => {
       console.log(util.inspect(response, { colors: true, depth: 4 }));
     };
-
 
     // This is a helper function to poll for the completion of an Asset Report and
     // then send it in the response to the client. Alternatively, you can provide a

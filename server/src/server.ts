@@ -25,3 +25,8 @@ app.use(bodyParser.json())
 
 Routes.Add(app);
 PlaidRoutes.Add(app);
+
+app.listen(app.get('port'), function () {
+  console.log(`Server running on http://localhost:${app.get('port')} in ${app.get('env')} mode`);
+  console.log('  Press CTRL-C to stop\n');
+});
