@@ -54,7 +54,7 @@ export class SnapshotCalculator {
     }
     
     private async getPredictedTransactions(account_id: string, startDate: Date, endDate: Date, balance: number ): Promise< SnapshotBalance[]> {
-      const snapshotSettings = this.user.settings.accountSnapshots.find(acct=>acct.account_id === account_id);
+      const snapshotSettings = this.user?.settings?.accountSnapshots.find(acct=>acct.account_id === account_id);
       let result: SnapshotBalance[] = [];
 
       if (!snapshotSettings || !snapshotSettings.scheduledTransactions || snapshotSettings.scheduledTransactions.length === 0) {
