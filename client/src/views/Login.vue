@@ -3,10 +3,10 @@
   <h1>IsInit: {{ Vue3GoogleOauth.isInit }}</h1>
   <h1>IsAuthorized: {{ Vue3GoogleOauth.isAuthorized }}</h1>
   <h2 v-if="user">signed user: {{user}}</h2>
-  <button @click="test" class="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">Test</button>
-  <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized" class="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">sign in</button>
-  <button @click="handleClickGetAuthCode" :disabled="!Vue3GoogleOauth.isInit" class="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">get authCode</button>
-  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized" class="m-5 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">sign out</button> 
+  <button @click="test" class="btn">Test</button>
+  <button @click="handleClickSignIn" :disabled="!Vue3GoogleOauth.isInit || Vue3GoogleOauth.isAuthorized" class="btn">sign in</button>
+  <button @click="handleClickGetAuthCode" :disabled="!Vue3GoogleOauth.isInit" class="btn">get authCode</button>
+  <button @click="handleClickSignOut" :disabled="!Vue3GoogleOauth.isAuthorized" class="btn">sign out</button> 
 </div>
 </template>
 

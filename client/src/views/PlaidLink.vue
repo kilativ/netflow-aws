@@ -1,7 +1,7 @@
 <template>
   <div class="plaid-link-wrapper">
-    <div class='title'>
-      <h1>Login Here</h1>
+    <div class='title text-lg'>
+      Login Here
     </div>
     <button class="plaid-link-button" @click="handleOnClick">
       Open Plaid Link
@@ -14,7 +14,7 @@
 <script lang="ts">
 import { Options, Vue } from "vue-class-component";
 import { Emit, Prop } from "vue-property-decorator";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { LinkToken } from "../models/LinkToken";
 
 axios.defaults.baseURL = "http://localhost:3000";
@@ -59,7 +59,7 @@ export default class PlaidLink extends Vue {
   loadScript(src: string) {
     return new Promise(function (resolve, reject) {
       if (document.querySelector('script[src="' + src + '"]')) {
-        resolve();
+        resolve(true);
         return;
       }
 
