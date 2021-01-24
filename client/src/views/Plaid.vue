@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="m-5">
     <plaid-link
       env="sandbox"
       clientName="Netflow"
