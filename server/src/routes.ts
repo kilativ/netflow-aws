@@ -3,12 +3,11 @@ import expressAsyncHandler from 'express-async-handler'
 import { AccountDal } from './dal/account-dal';
 import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotCalculator } from './snapshot-calculator';
-import  {OAuth2Client} from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import { NetFlowUser } from '../../shared/models/account-dto';
 import { PlaidDal } from './plaid-dal';
 
 export class Routes {
-
   public static Add(app: express.Express) {
     app.get('/', (req, res) => {
       res.sendFile('./index.html', { root: __dirname });
@@ -104,7 +103,7 @@ export class Routes {
     );
     
     app.get('/s/api/snapshot/:accountId'
-      , [validateUser, validateAccount], 
+      , validateAccount, 
       expressAsyncHandler(async (req: any, res: any) => {
         let calc = new SnapshotCalculator()
         let snap = await calc.get(req.account, 60, 30, req.user);
@@ -113,6 +112,3 @@ export class Routes {
     );
   }
 }
-
-
-// export = app;
