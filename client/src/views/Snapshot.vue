@@ -2,7 +2,7 @@
 <div>
     
     <div class="bg-gray-800 pt-3">
-      <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
+      <div class="rounded-tl-md bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
         <h3 class="font-bold pl-2">Account - Snapshot</h3>
       </div>
     </div>
@@ -10,7 +10,7 @@
 
     <div class="flex flex-wrap">
       <div class="w-full md:w-1/1 xl:w-1/1 p-6" >
-        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 shadow-xl p-5">
             <div class="flex-1 text-right md:text-center">
               <h4 class="font-bold text-3xl">
                 Snapshot
@@ -42,6 +42,7 @@ export default class SnapshotView extends NetFlowVue {
       this.loadData();
     } else {
       console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
+      new Promise(resolve => setTimeout(resolve, 2000)).then(_=>this.loadData());
     }
   }
   

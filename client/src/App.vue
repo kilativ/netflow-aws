@@ -1,14 +1,12 @@
 <template>
 
 <div>
-    <nav class="bg-gray-800 pt-2 md:pt-1 pb-1 px-1 mt-0 h-auto fixed w-full z-20 top-0">
+    <nav class="bg-gray-800 pt-2 md:pt-1 pb-1 px-1 mt-0 h-auto md:fixed w-full z-20 top-0">
         <div class="flex flex-wrap items-center">
-            <div class="flex flex-shrink md:w-2/3 justify-center md:justify-start text-white">
-                <a href="#">
-                    <span class="text-xl pl-2"><i class="em em-money_with_wings m-2"></i><span class="px-2">NetFlow</span></span>
-                </a>
+            <div class="flex flex-shrink md:w-2/3 justify-center md:justify-start text-white cursor-pointer">
+                <span class="text-xl pl-2"><i class="em em-money_with_wings m-2"></i><span class="px-2">NetFlow</span></span>
             </div>
-            <div class="flex w-full pt-2 content-center justify-between md:w-1/3 md:justify-end">
+            <div class="flex w-full md:pt-2 content-center justify-between md:w-1/3 md:justify-end">
               <div class="md:text-gray-400 px-3">Hello User</div>
               <div class="md:text-gray-400 px-3">IsInit: {{ Vue3GoogleOauth?.isInit }}</div>
               <div class="md:text-gray-400 px-3">IsAuthorized: {{ Vue3GoogleOauth?.isAuthorized }}</div>
@@ -17,7 +15,7 @@
     </nav>
 
     <div class="flex flex-col md:flex-row">
-        <div class="bg-gray-800 shadow-xl h-16 fixed bottom-0 mt-12 md:relative md:h-screen z-10 w-full md:w-48">
+        <div class="bg-gray-800 shadow-xl h-16 fixed bottom-0 md:mt-12 md:relative md:h-screen z-10 w-full md:w-48">
             <div class="md:mt-12 md:w-48 md:fixed md:left-0 md:top-0 content-center md:content-start text-left justify-between">
                 <ul class="list-reset flex flex-row md:flex-col py-0 md:py-3 px-1 md:px-2 text-center md:text-left">
                     <li class="mr-3 flex-1" v-for="item in menuItems" :key="item.name">
@@ -33,7 +31,7 @@
             </div>
         </div>
 
-        <div class="main-content flex-1 bg-gray-100 mt-12 md:mt-2 pb-24 md:pb-5">
+        <div class="main-content flex-1 bg-gray-100 md:mt-4 pb-24 md:pb-5">
   <router-view/>
         </div>
     </div>
