@@ -7,7 +7,8 @@
     "build-server": "cd server && npm install && npm run build",
     "run-client": "cd client && npm run serve",
     "run-jobs": "cd server && npm run run-jobs",
-    "run-server-quick": "cd server && npm run run-server-quick"
+    "run-server-quick": "cd server && npm run run-server-quick",
+    "serve": "concurrently -k -n \"Server,Client\" -c \"cyan.bold,green.bold\" \"npm run run-server-quick\" \"npm run run-client\" "
   },
   "repository": {
     "type": "git",
@@ -17,8 +18,8 @@
     "url": "https://github.com/vvvtech/netflow/issues"
   },
   "homepage": "https://github.com/vvvtech/netflow#readme",
-  "devDependencies": {
-    "shelljs": "^0.8.4"
-  },
-  "dependencies": {}
+  "devDependencies": {},
+  "dependencies": {
+    "concurrently": "^5.3.0"
+  }
 }

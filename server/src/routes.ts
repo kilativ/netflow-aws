@@ -30,6 +30,7 @@ export class Routes {
         const bank = user.banks.find(bank=> bank.accounts.map(acct=>acct.account_id).indexOf(accountId)>=0);
         if (bank) {
           req.account = bank.accounts.find(acct=> acct.account_id === accountId);
+          req.user = email;
           next();
         } else {
           response.status(401).json("not authorized")
