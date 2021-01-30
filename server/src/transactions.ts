@@ -33,10 +33,10 @@ export class Transactions {
         }
     }
 
-    public async processUserBank(userId: string, bank: NetFlowPlaidBankLink, today: string) {
+    public async processUserBank(userId: string, bank: NetFlowPlaidBankLink, today: string, numberOfDays = 7) {
         console.log(`processing user ${userId}, bank ${bank.id}`);
 
-        const txnsAndAccounts = await this.plaidDal.fetchTransactions(bank.token);
+        const txnsAndAccounts = await this.plaidDal.fetchTransactions(bank.token, numberOfDays);
         console.log(`got ${txnsAndAccounts.accounts.length} accounts and ${txnsAndAccounts.transactions.length} transactions from plaid`);
 
         // don't run it for a lot of transaction until batching is implemented in order not to exceed DynamoDB througput limits

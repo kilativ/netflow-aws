@@ -6,6 +6,9 @@ import { SnapshotCalculator } from './snapshot-calculator';
 import { OAuth2Client } from 'google-auth-library';
 import { NetFlowUser } from '../../shared/models/account-dto';
 import { PlaidDal } from './plaid-dal';
+import { Transactions } from './transactions';
+import { BalanceDto } from '../../shared/models/balance-dto';
+import { Formatter } from '../../shared/utils/formatter';
 
 export class Routes {
   public static Add(app: express.Express) {
@@ -102,6 +105,25 @@ export class Routes {
         res.send(txn)
       })
     );
+
+    app.post('/s/api/bank/:bankId/fetch-transactions'
+      , validateUser,
+      expressAsyncHandler(async (req: any, res) => {
+        const user = await new AccountDal().get(req.user);
+        const bank = user.banks.find(b=>b.id === req.params.bankId);
+        
+        let daysToFetch = 365;
+        if (bank.accounts) {
+          const maxBalanceDate= bank.accounts.map(acct=> (acct.balances as BalanceDto).date).reduce((prev,current)=> prev > current? prev: current);
+          daysToFetch = Math.ceil((new Date().getTime() - new Date(maxBalanceDate).getTime() )/ (1000 * 3600 * 24));
+        } 
+        const today = Formatter.toISODateString(new Date());
+        await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
+
+        res.sendStatus(200);
+      })
+    );
+
     
     app.get('/s/api/snapshot/:accountId'
       , validateAccount, 

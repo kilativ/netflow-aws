@@ -78,4 +78,22 @@ export class AccountService {
         return response.data;
     }
 
+    async fetchBankTransaction(accessToken: string, bankId: string) {
+        axios.interceptors.response.use(res => { 
+            return res;
+        }, function (error) {
+            console.log(error)
+        })
+
+        const response = await axios.post<string>(`/s/api/bank/${bankId}/fetch-transactions`,
+            {}
+            , {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+        return response.data;
+    }
+
+
 }

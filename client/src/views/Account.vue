@@ -14,7 +14,8 @@
         <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 shadow-xl p-5">
             <div class="flex-1 text-left  lg:text-center">
               <h4 class="font-bold text-3xl">
-                {{ bank.nickname }}
+                {{ bank.nickname }} 
+                <i class="fas fa-download cursor-pointer" @click="fetchTransactions(bank.id)"></i>
               </h4>
           </div>
            <div class="lg:p-5">
@@ -57,6 +58,7 @@
 import { AccountService } from "../services/account";
 import { NetFlowPlaidBankLink, NetFlowUser} from "../../../shared/models/account-dto";
 import { NetFlowVue } from "./NetFlowBaseVue";
+import Swal from 'sweetalert2'
 
 export default class AccountView extends NetFlowVue {
   private list: NetFlowPlaidBankLink[] = [];
@@ -77,5 +79,20 @@ export default class AccountView extends NetFlowVue {
     );
     this.list = this.user.banks;
   }
+
+  fetchTransactions(bankId: string) {
+    Swal.fire({
+      text: 'Are you sure you want to download transactions for this bank?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes!',
+      cancelButtonText: 'No'
+    }).then(async (result: any) => {
+      if (result.isConfirmed) {
+        await new AccountService().fetchBankTransaction(this.getAccessToken(), bankId);
+      }
+    });
+  }
+  
 }
 </script>

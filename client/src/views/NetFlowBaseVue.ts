@@ -5,6 +5,7 @@ import { Component } from "vue-property-decorator";
 
 export abstract class NetFlowVue extends Vue {
     public static $gAuth: any;
+    public $swal: any;
     public static Vue3GoogleOauth: any;
     protected formatter = Formatter;
 
