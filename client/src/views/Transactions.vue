@@ -69,48 +69,35 @@
             </div>
         </div>
       </div>
-    IsInit: {{ Vue3GoogleOauth.isInit }}
   </div>
   </div>
 </template>
 <script lang="ts">
-import axios, { AxiosResponse } from "axios";
-import { Vue } from "vue-class-component";
-import { Component, Prop, Watch } from "vue-property-decorator";
 import { AccountService } from "../services/account";
-import gAuthPlugin from "vue3-google-oauth2";
-import {
-  NetFlowPlaidBankLink,
-  NetFlowUser,
-} from "../../../shared/models/account-dto";
-import { inject } from "vue";
 import { Transaction } from "plaid";
+import { NetFlowVue } from "./NetFlowBaseVue";
+import { Prop } from "vue-property-decorator";
 
-export default class TransactionsView extends Vue {
+export default class TransactionsView extends NetFlowVue {
   @Prop(String) accountId!: string;
   
   transactions: Transaction[] = [];
   pendingTransactions: Transaction[] = [];
-  private $gAuth: any;
-  private Vue3GoogleOauth: any = inject("Vue3GoogleOauth");
+
+  mounted() {
+    if(NetFlowVue.Vue3GoogleOauth?.isInit) {
+      this.loadTransactions();
+    } else {
+      console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
+    }
+  }
 
   async loadTransactions() {
-    console.log(this.accountId);
-    // need to call this after logged in
-    const accessCode = this.$gAuth.instance.currentUser.get().getAuthResponse()
-      .access_token;
-
-    const allTxns = await new AccountService().getAccountTransactions(accessCode,this.accountId);
+    const allTxns = await new AccountService().getAccountTransactions(this.getAccessToken(),this.accountId);
 
     this.transactions = allTxns.filter(txn=>!txn.pending);
     const pendingTxnThatHavePermTxn = this.transactions.filter(txn=>txn.pending_transaction_id).map(txn=>txn.pending_transaction_id );
     this.pendingTransactions = allTxns.filter(txn=>txn.pending && pendingTxnThatHavePermTxn.indexOf(txn.transaction_id)=== -1);
-  }
-
-  @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
-    if (this.Vue3GoogleOauth.isInit) {
-      this.loadTransactions();
-    }
   }
 }
 </script>

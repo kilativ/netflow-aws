@@ -1,13 +1,12 @@
 import { Formatter } from "../../../shared/utils/formatter"
-import { inject } from "vue";
 import { Vue } from "vue-class-component";
 
-export class NetFlowVue extends Vue {
-    private $gAuth: any;
-    protected Vue3GoogleOauth: any = inject("Vue3GoogleOauth");
+export abstract class NetFlowVue extends Vue {
+    public static $gAuth: any;
+    public static Vue3GoogleOauth: any;
     protected formatter = Formatter;
 
     getAccessToken() {
-        return this.$gAuth.instance.currentUser.get().getAuthResponse().access_token;
+        return NetFlowVue.$gAuth.instance.currentUser.get().getAuthResponse().access_token;
     }
 }

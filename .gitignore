@@ -5,4 +5,4 @@ server/out
 /.env
 /*/.env
 /server/lambda-env.json
-/server/claudia.json
+/server/claudia*.json

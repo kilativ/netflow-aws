@@ -10,7 +10,9 @@
             </div>
             <div class="flex w-full pt-2 content-center justify-between md:w-1/3 md:justify-end">
               <div class="md:text-gray-400 px-3">Hello User</div>
-            </div>
+              <div class="md:text-gray-400 px-3">IsInit: {{ Vue3GoogleOauth?.isInit }}</div>
+              <div class="md:text-gray-400 px-3">IsAuthorized: {{ Vue3GoogleOauth?.isAuthorized }}</div>
+        </div>
         </div>
     </nav>
 
@@ -41,11 +43,15 @@
 </template>
 <script lang="ts">
 
+import { inject } from "vue";
 import { Vue } from "vue-class-component";
+import { Watch } from "vue-property-decorator";
 import { NetFlowVue } from "./views/NetFlowBaseVue";
-import { Component, Watch } from "vue-property-decorator";
 
 export default class App extends Vue {
+    private $gAuth: any;
+    protected Vue3GoogleOauth: any = inject("Vue3GoogleOauth");
+
     $route: any;
 
     menuItems = [
@@ -60,13 +66,18 @@ export default class App extends Vue {
     }
 
     getItemClass(item: MenuItem) {
-        console.log(item.link);
-        console.log(this.$route.path);
         return this.isCurrentSelection(item)? `border-${item.color}`: `border-gray-800 hover:border-${item.color}`;
     }
 
     getIconClass(item: MenuItem) {
         return this.isCurrentSelection(item)? `${item.icon} text-${item.color}`: item.icon;
+    }
+    
+    @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
+        if (this.Vue3GoogleOauth.isInit) {
+        NetFlowVue.Vue3GoogleOauth = this.Vue3GoogleOauth;
+        NetFlowVue.$gAuth = this.$gAuth;
+        }
     }
 }
 

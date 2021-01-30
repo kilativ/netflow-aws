@@ -21,18 +21,14 @@
             </div>
         </div>
       </div>
-    IsInit: {{ Vue3GoogleOauth.isInit }}
   </div>
-
 </div>  
 </template>
 
 <script lang="ts">
 import Chart from "chart.js";
-import { inject } from "vue";
-import { Vue } from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
-import { SnapshotBalance, SnapshotDto } from "../../../shared/models/snapshot-dto";
+import { Prop } from "vue-property-decorator";
+import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import { Formatter } from '../../../shared/utils/formatter'
@@ -41,12 +37,14 @@ export default class SnapshotView extends NetFlowVue {
   @Prop(String) accountId!: string;
   // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
 
-  @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
-    if (this.Vue3GoogleOauth.isInit) {
+  mounted() {
+    if(NetFlowVue.Vue3GoogleOauth?.isInit) {
       this.loadData();
+    } else {
+      console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
     }
   }
-
+  
   loadData() {
       new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
         this.createChart(data.account.official_name ?? data.account.name, data.balances.filter(b=>!b.future), data.balances.filter(b=>b.future));
