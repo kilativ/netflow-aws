@@ -96,6 +96,16 @@ export class Routes {
         }
       })
     );
+
+    app.get('/s/api/user/transactions'
+      , validateUser,
+      expressAsyncHandler(async (req: any, res) => {
+        let dal = new TransactionDal();
+        let txn = await dal.getAllForUser(req.user);
+        res.send(txn);
+      })
+    );
+
     
     app.get('/s/api/account/:accountId/transactions'
       , validateAccount,

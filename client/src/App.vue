@@ -55,6 +55,7 @@ export default class App extends Vue {
     menuItems = [
         {name:"Home", link:"/", class:"border-gray-800 hover:border-pink-500", icon:"fa-tasks", color:"pink-500"},
         {name:"Accounts", link:"/account", class:"border-gray-800 hover:border-blue-600", icon:"fa-chart-area", color:"blue-600"},
+        {name:"Transactions", link:"/transactions", class:"border-gray-800 hover:border-green-500", icon:"fa-dollar-sign", color:"green-500"},
         {name:"Plaid", link:"/plaid", class:" border-gray-800 hover:border-purple-500", icon:"fa-envelope", color:"purple-500"},
         {name:"Google Login", link:"/login", class:"border-gray-800 hover:border-red-500", icon:"fa-wallet", color:"red-500"},
     ]
