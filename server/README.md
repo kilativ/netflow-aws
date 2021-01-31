@@ -11,9 +11,13 @@ https://github.com/plaid/quickstart.git
 ### AWS Setup
 
 #### IAM
+* TODO
 
 #### Dynamo DB
 Right now you need to create 3 tables in AWS DynamoDB
+* TODO
+
+#### Lambda for daily job
 * TODO
 
 

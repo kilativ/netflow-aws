@@ -2,7 +2,7 @@
 <div>
     
     <div class="bg-gray-800 pt-3">
-      <div class="rounded-tl-3xl bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
+      <div class="rounded-tl-md bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
         <h3 class="font-bold pl-2">Account - Snapshot</h3>
       </div>
     </div>
@@ -10,7 +10,7 @@
 
     <div class="flex flex-wrap">
       <div class="w-full md:w-1/1 xl:w-1/1 p-6" >
-        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-b from-blue-200 to-blue-100 border-b-4 border-blue-600 shadow-xl p-5">
             <div class="flex-1 text-right md:text-center">
               <h4 class="font-bold text-3xl">
                 Snapshot
@@ -21,18 +21,14 @@
             </div>
         </div>
       </div>
-    IsInit: {{ Vue3GoogleOauth.isInit }}
   </div>
-
 </div>  
 </template>
 
 <script lang="ts">
 import Chart from "chart.js";
-import { inject } from "vue";
-import { Vue } from "vue-class-component";
-import { Prop, Watch } from "vue-property-decorator";
-import { SnapshotBalance, SnapshotDto } from "../../../shared/models/snapshot-dto";
+import { Prop } from "vue-property-decorator";
+import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import { Formatter } from '../../../shared/utils/formatter'
@@ -41,12 +37,15 @@ export default class SnapshotView extends NetFlowVue {
   @Prop(String) accountId!: string;
   // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
 
-  @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
-    if (this.Vue3GoogleOauth.isInit) {
+  mounted() {
+    if(NetFlowVue.Vue3GoogleOauth?.isInit) {
       this.loadData();
+    } else {
+      console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
+      new Promise(resolve => setTimeout(resolve, 2000)).then(_=>this.loadData());
     }
   }
-
+  
   loadData() {
       new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
         this.createChart(data.account.official_name ?? data.account.name, data.balances.filter(b=>!b.future), data.balances.filter(b=>b.future));

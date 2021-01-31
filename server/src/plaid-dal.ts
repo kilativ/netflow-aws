@@ -43,8 +43,8 @@ export class PlaidDal {
       }
     
     
-    public async fetchTransactions(accessToken: string): Promise<TransactionsResponse> {
-        let startDate = moment().subtract(7, 'days').format('YYYY-MM-DD');
+    public async fetchTransactions(accessToken: string, numOfDays:number): Promise<TransactionsResponse> {
+        let startDate = moment().subtract(numOfDays, 'days').format('YYYY-MM-DD');
         let endDate = moment().format('YYYY-MM-DD');
 
         const originalResponse = await this.client.getTransactions(accessToken, startDate, endDate, {});

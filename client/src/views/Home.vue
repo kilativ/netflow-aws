@@ -1,14 +1,14 @@
 <template>
   <div>
     <div class="bg-gray-800 pt-3">
-      <div class="rounded-tl-3xl bg-gradient-to-r from-pink-500 to-gray-800 p-4 shadow text-2xl text-white">
+      <div class="rounded-tl-md bg-gradient-to-r from-pink-500 to-gray-800 p-4 shadow text-2xl text-white">
         <h3 class="font-bold pl-2">Home sample</h3>
       </div>
     </div>
 
     <div class="flex flex-wrap">
       <div class="w-full md:w-1/2 xl:w-1/3 p-6">
-        <div class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 rounded-lg shadow-xl p-5">
+        <div class="bg-gradient-to-b from-green-200 to-green-100 border-b-4 border-green-600 shadow-xl p-5">
           <div class="flex flex-row items-center">
             <div class="flex-shrink pr-4">
               <div class="rounded-full p-5 bg-green-600">
