@@ -12,7 +12,7 @@
 
       <tbody class="block lg:table-row-group">
         <tr v-for="txn in transactions" :key="txn.transaction_id" class="block lg:table-row border-b border-blue-500 mb-3">
-          <td class="block lg:table-cell pr-3">
+          <td class="block lg:table-cell">
             <div class="flex flex-row justify-between">
               <div class="font-bold visible lg:hidden">Date</div>
               <div class="whitespace-nowrap">{{ txn.date }}</div>

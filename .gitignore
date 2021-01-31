@@ -4,5 +4,5 @@ node_modules
 server/out
 /.env
 /*/.env
-/server/lambda-env.json
+/server/lambda-env*.json
 /server/claudia*.json

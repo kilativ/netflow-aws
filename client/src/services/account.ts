@@ -2,6 +2,7 @@ import axios from "axios";
 import { Transaction } from "plaid";
 import { NetFlowUser } from '../../../shared/models/account-dto'
 import { SnapshotDto } from '../../../shared/models/snapshot-dto';
+import { TransactionWithAccount } from "../../../shared/models/transaction-with-account";
 
 axios.defaults.baseURL = process.env.VUE_APP_BASE_URL ?? "http://localhost:3000";
 
@@ -62,6 +63,21 @@ export class AccountService {
         })
 
         const response = await axios.get(`/s/api/account/${accountId}/transactions`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+        return response.data;
+    }
+
+    async getUserTransactions(accessToken: string): Promise<TransactionWithAccount[]> {
+        axios.interceptors.response.use(res => { // todo make this global
+            return res;
+        }, function (error) {
+            console.log(error)
+        })
+
+        const response = await axios.get(`/s/api/user/transactions`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

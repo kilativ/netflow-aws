@@ -1,6 +1,8 @@
 const AWS = require('aws-sdk');
 import { Transaction } from 'plaid';
+import { TransactionWithAccount } from '../../../shared/models/transaction-with-account';
 import { Formatter } from '../../../shared/utils/formatter';
+import { AccountDal } from './account-dal';
 
 export class TransactionDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
@@ -61,6 +63,43 @@ export class TransactionDal {
         return;
       }
     });
+  }
+
+  getAllForUser(userId: string): Promise<TransactionWithAccount[]> {
+
+    // in multi-user environment better to tag transaction with user and index on user/date
+
+    return new Promise(async (resolve, reject) => {
+      const banks = await (await new AccountDal().get(userId)).banks;
+      const allAccounts = banks.map(b=>b.accounts).reduce( (prev, curr)=> prev.concat(curr),[]);
+
+      let filterExpression:string[] = [];
+      let attributeValues: { [x: string]: any; } = {};
+
+      allAccounts.forEach((acct, index)=> {
+        const key = `:accountId${index}`;
+        filterExpression.push(key);
+        attributeValues[key] = acct.account_id;
+      })
+
+      const params = {
+        TableName: process.env.TAXN_DYNAMODB_TABLE,
+        ScanIndexForward: false,
+        FilterExpression: `account_id in (${filterExpression.join(',')})`,
+        ExpressionAttributeValues: attributeValues,
+      };
+
+      this.dynamoDb.scan(params, function (err: any, data: any) {
+        if (err) {
+          console.error(err);
+          reject(err);
+        } else {
+          const results:TransactionWithAccount[] = data.Items.sort((a:TransactionWithAccount, b:TransactionWithAccount)=> {return b.date.localeCompare(a.date);});
+          results.forEach(txn=> txn.account_name = allAccounts.find(acct=> acct.account_id === txn.account_id).name);
+          resolve(results);
+        }
+      });
+    })
   }
 
   getAllForAccount(accountId: string): Promise<Transaction[]> {
