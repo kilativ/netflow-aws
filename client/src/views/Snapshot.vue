@@ -27,7 +27,7 @@
 
 <script lang="ts">
 import Chart from "chart.js";
-import { Prop } from "vue-property-decorator";
+import { InjectReactive, Prop, Watch } from "vue-property-decorator";
 import { SnapshotBalance } from "../../../shared/models/snapshot-dto";
 import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
@@ -37,15 +37,13 @@ export default class SnapshotView extends NetFlowVue {
   @Prop(String) accountId!: string;
   // vertical line to mark "Today" https://stackoverflow.com/a/43092029/75672
 
-  mounted() {
-    if(NetFlowVue.Vue3GoogleOauth?.isInit) {
+  @InjectReactive() isInit!: boolean;
+  @Watch("isInit", { immediate: true }) onIsInitChanged() {
+    if (this.isInit) {
       this.loadData();
-    } else {
-      console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
-      new Promise(resolve => setTimeout(resolve, 2000)).then(_=>this.loadData());
     }
   }
-  
+
   loadData() {
       new AccountService().getAccountSnapshot(this.getAccessToken(), this.accountId).then((data) => {
         this.createChart(data.account.official_name ?? data.account.name, data.balances.filter(b=>!b.future), data.balances.filter(b=>b.future));

@@ -5,10 +5,12 @@
     "build": "npm run build-server && npm run build-client",
     "build-client": "cd client && npm install && npm run build",
     "build-server": "cd server && npm install && npm run build",
+    "client": "npm run run-client",
     "run-client": "cd client && npm run serve",
     "run-jobs": "cd server && npm run run-jobs",
     "run-server-quick": "cd server && npm run run-server-quick",
-    "serve": "concurrently -k -n \"Server,Client\" -c \"cyan.bold,green.bold\" \"npm run run-server-quick\" \"npm run run-client\" "
+    "serve": "concurrently -k -n \"Server,Client\" -c \"cyan.bold,green.bold\" \"npm run server\" \"npm run client\" ",
+    "server": "npm run run-server-quick"
   },
   "repository": {
     "type": "git",
