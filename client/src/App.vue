@@ -43,7 +43,7 @@
 
 import { inject } from "vue";
 import { Vue } from "vue-class-component";
-import { Watch } from "vue-property-decorator";
+import { ProvideReactive, Watch } from "vue-property-decorator";
 import { NetFlowVue } from "./views/NetFlowBaseVue";
 
 export default class App extends Vue {
@@ -72,10 +72,13 @@ export default class App extends Vue {
         return this.isCurrentSelection(item)? `${item.icon} text-${item.color}`: item.icon;
     }
     
+    @ProvideReactive() isInit = false;
+
     @Watch("Vue3GoogleOauth.isInit", { immediate: true }) onMatchChanged() {
         if (this.Vue3GoogleOauth.isInit) {
-        NetFlowVue.Vue3GoogleOauth = this.Vue3GoogleOauth;
-        NetFlowVue.$gAuth = this.$gAuth;
+            NetFlowVue.Vue3GoogleOauth = this.Vue3GoogleOauth;
+            NetFlowVue.$gAuth = this.$gAuth;
+            this.isInit = true;
         }
     }
 }

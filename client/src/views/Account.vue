@@ -55,6 +55,7 @@
   </div>
 </template>
 <script lang="ts">
+import { InjectReactive, Watch } from "vue-property-decorator";
 import { AccountService } from "../services/account";
 import { NetFlowPlaidBankLink, NetFlowUser} from "../../../shared/models/account-dto";
 import { NetFlowVue } from "./NetFlowBaseVue";
@@ -64,12 +65,10 @@ export default class AccountView extends NetFlowVue {
   private list: NetFlowPlaidBankLink[] = [];
   private user: NetFlowUser = new NetFlowUser();
 
-  mounted() {
-    if(NetFlowVue.Vue3GoogleOauth?.isInit) {
+  @InjectReactive() isInit!: boolean;
+  @Watch("isInit", { immediate: true }) onIsInitChanged() {
+    if (this.isInit) {
       this.loadData();
-    } else {
-      console.log("Need to figure out how to make it wait for NetFlowVue.Vue3GoogleOauth?.isInit to be initialized");
-      new Promise(resolve => setTimeout(resolve, 2000)).then(_=>this.loadData());
     }
   }
 
