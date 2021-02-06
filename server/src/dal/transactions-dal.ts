@@ -1,5 +1,7 @@
 const AWS = require('aws-sdk');
-import { Transaction } from 'plaid';
+import moment from 'moment';
+import { Transaction, TransactionsResponse } from 'plaid';
+import { stringify } from 'uuid';
 import { NetflowTransaction } from '../../../shared/models/netflow-transaction';
 import { Formatter } from '../../../shared/utils/formatter';
 import { AccountDal } from './account-dal';
@@ -35,10 +37,20 @@ export class TransactionDal {
     })
   }
 
-  async updateMultiple(transactions: Transaction[]) {
+  async updateMultiple(txnsAndAccounts: TransactionsResponse, userId: string) {
+
+    const transactions = txnsAndAccounts.transactions;
+    transactions.forEach(txn => {
+      const netflowTxn = txn as NetflowTransaction;
+      netflowTxn.userId = userId;
+      netflowTxn.account_name = txnsAndAccounts.accounts.find(acct=>acct.account_id === txn.account_id).name;
+      netflowTxn.search_string = txn.name.toLowerCase();
+    });
+
+
     var arrSize = transactions.length;
     let chunk:Transaction[];
-    const chunkSize = 50;
+    const chunkSize = 25;
 
     let param = new TxnBatchWriteParam();
     param.RequestItems = {};
@@ -61,38 +73,42 @@ export class TransactionDal {
     }
   }
 
-  getAllForUser(userId: string): Promise<NetflowTransaction[]> {
+  getAllForUser(userId: string, startDate: Date, endDate: Date, searchTerm:string = null): Promise<NetflowTransaction[]> {
 
     // in multi-user environment better to tag transaction with user and index on user/date
 
     return new Promise(async (resolve, reject) => {
-      const banks = await (await new AccountDal().get(userId)).banks;
-      const allAccounts = banks.map(b=>b.accounts).reduce( (prev, curr)=> prev.concat(curr),[]);
-
-      let filterExpression:string[] = [];
-      let attributeValues: { [x: string]: any; } = {};
-
-      allAccounts.forEach((acct, index)=> {
-        const key = `:accountId${index}`;
-        filterExpression.push(key);
-        attributeValues[key] = acct.account_id;
-      })
 
       const params = {
         TableName: process.env.TAXN_DYNAMODB_TABLE,
         ScanIndexForward: false,
-        FilterExpression: `account_id in (${filterExpression.join(',')})`,
-        ExpressionAttributeValues: attributeValues,
+        IndexName: 'user-by-date',
+        KeyConditionExpression: '#kn0 = :kv0 AND #kn1 BETWEEN :kv1 AND :kv1p2',
+        ExpressionAttributeNames: {
+          "#kn0": "userId",
+          "#kn1": "date"
+        },
+        ExpressionAttributeValues : {
+        ":kv0":userId,
+        ":kv1": moment(startDate).format('YYYY-MM-DD'),
+        ":kv1p2": moment(endDate).format('YYYY-MM-DD'), 
+        }
       };
 
-      this.dynamoDb.scan(params, function (err: any, data: any) {
+      if (searchTerm) {
+        const paramsAny = params as any;
+
+        paramsAny.FilterExpression = "contains(#n0, :v0)";
+        paramsAny.ExpressionAttributeNames["#n0"] = "search_string";
+        paramsAny.ExpressionAttributeValues[":v0"] = searchTerm.toLowerCase();
+      }
+
+      this.dynamoDb.query(params, function (err: any, data: any) {
         if (err) {
           console.error(err);
           reject(err);
         } else {
-          const results:NetflowTransaction[] = data.Items.sort((a:NetflowTransaction, b:NetflowTransaction)=> {return b.date.localeCompare(a.date);});
-          results.forEach(txn=> txn.account_name = allAccounts.find(acct=> acct.account_id === txn.account_id).name);
-          resolve(results);
+          resolve(data.Items);
         }
       });
     })

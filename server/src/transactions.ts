@@ -28,8 +28,10 @@ export class Transactions {
         console.log(`retrieval date ${today}`);
 
         for (const user of netFlowUsers) {
-            for (const bank of user.banks) {
-                await this.processUserBank(user.userId, bank, today);
+            if (user.banks) {
+                for (const bank of user.banks) {
+                    await this.processUserBank(user.userId, bank, today);
+                }
             }
         }
     }
@@ -40,16 +42,7 @@ export class Transactions {
         const txnsAndAccounts = await this.plaidDal.fetchTransactions(bank.token, numberOfDays);
         console.log(`got ${txnsAndAccounts.accounts.length} accounts and ${txnsAndAccounts.transactions.length} transactions from plaid`);
 
-        // don't run it for a lot of transaction until batching is implemented in order not to exceed DynamoDB througput limits
-        txnsAndAccounts.transactions.forEach(txn => {
-            const netflowTxn = txn as NetflowTransaction;
-            netflowTxn.userId = userId;
-            netflowTxn.search_string = txn.name.toLowerCase();
-        });
-        
-        this.transactionDal.updateMultiple(txnsAndAccounts.transactions);
-
-        // txnsAndAccounts.transactions.forEach(txn => this.transactionDal.update(txn));
+        this.transactionDal.updateMultiple(txnsAndAccounts, userId);
         console.log('updated transactions in dynamodb');
 
         const accounts = txnsAndAccounts.accounts;

@@ -28,7 +28,6 @@ export class AccountDal {
           console.log(err);
           reject(err);
         } else {
-          // get transactions for this bank
           await this.getTransactionsForBank(userId, access_token);
           resolve(result)
         }
@@ -39,7 +38,6 @@ export class AccountDal {
     const user = await this.get(userId);
     const bankFound = user.banks.find(b => b.token === access_token);
     if (bankFound) {
-
       const today = Formatter.toISODateString(new Date());
       await new Transactions(this).processUserBank(userId, bankFound, today);
     }
@@ -151,6 +149,7 @@ export class AccountDal {
 
       this.dynamoDb.get(params, function (err: any, data: any) {
         if (err) {
+          console.error(err);
           reject(err);
         } else {
           resolve(data.Item);
