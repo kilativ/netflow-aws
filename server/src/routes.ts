@@ -105,7 +105,7 @@ export class Routes {
         let startDate =req.query.startDate? new Date(req.query.startDate): moment().subtract(30, 'days').toDate();
         let endDate = req.query.endDate? new Date(req.query.endDate): new Date() ;
 
-        let txn = await dal.getAllForUser(req.user, startDate, endDate);
+        let txn = await dal.getAllForUser(req.user, startDate, endDate, req.query.searchTerm);
         res.send(txn);
       })
     );

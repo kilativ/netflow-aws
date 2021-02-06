@@ -1,10 +1,8 @@
 const AWS = require('aws-sdk');
 import moment from 'moment';
 import { Transaction, TransactionsResponse } from 'plaid';
-import { stringify } from 'uuid';
 import { NetflowTransaction } from '../../../shared/models/netflow-transaction';
 import { Formatter } from '../../../shared/utils/formatter';
-import { AccountDal } from './account-dal';
 
 export class TransactionDal {
   private dynamoDb = new AWS.DynamoDB.DocumentClient();
@@ -74,9 +72,6 @@ export class TransactionDal {
   }
 
   getAllForUser(userId: string, startDate: Date, endDate: Date, searchTerm:string = null): Promise<NetflowTransaction[]> {
-
-    // in multi-user environment better to tag transaction with user and index on user/date
-
     return new Promise(async (resolve, reject) => {
 
       const params = {

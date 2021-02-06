@@ -14,20 +14,26 @@
                 All Transactions
               </h4>
               <div><i class="fas fa-parking pl-1"></i> = pending</div>
+              <div>
+                <form v-on:submit.prevent="searchClicked">
+                  <input v-model="searchTerm" placeholder="search" class="border-green-700 border px-2"> 
+                  <button class="m-5 bg-green-500 px-2 py-1 hover:bg-green-700 text-white font-bold border border-green-700" @click="searchClicked">Search</button>
+                </form>
+              </div>
           </div>
            <div>
     <table class="w-full lg:p-5 text-gray-700 block lg:table">
       <thead class="hidden lg:table-header-group">
           <tr>
-              <th class="text-left text-blue-900 px-1">Date</th>
-              <th class="text-left text-blue-900 px-1">Name</th>
-              <th class="text-left text-blue-900 px-1">Account</th>
-              <th class="text-right text-blue-900 px-1">Amount</th>
+              <th class="text-left text-green-900 px-1">Date</th>
+              <th class="text-left text-green-900 px-1">Name</th>
+              <th class="text-left text-green-900 px-1">Account</th>
+              <th class="text-right text-green-900 px-1">Amount</th>
           </tr>
       </thead>
 
       <tbody class="block lg:table-row-group">
-        <tr v-for="txn in transactions.slice(0,50)" :key="txn.transaction_id" class="block lg:table-row border-b border-blue-500 mb-3">
+        <tr v-for="txn in transactions.slice(0,50)" :key="txn.transaction_id" class="block lg:table-row border-b border-green-500 mb-3">
           <td class="block lg:table-cell">
             <div class="flex flex-row justify-between">
               <div class="font-bold visible lg:hidden">Date</div>
@@ -59,6 +65,16 @@
         </tr>
       </tbody>
   </table>
+  <div v-if="pleaseWait">
+    <div class="sk-wave">
+      <div class="sk-wave-rect spinner"></div>
+      <div class="sk-wave-rect spinner"></div>
+      <div class="sk-wave-rect spinner"></div>
+      <div class="sk-wave-rect spinner"></div>
+      <div class="sk-wave-rect spinner"></div>
+    </div>
+  </div>
+        <button class="m-5 bg-green-500 px-2 py-1 hover:bg-green-700 text-white font-bold border border-green-700" @click="loadOlder()">Load older</button>
             </div>
         </div>
       </div>
@@ -73,6 +89,10 @@ import { InjectReactive, Prop, Watch } from "vue-property-decorator";
 
 import TransactionTable from './TransactionTable.vue';
 import { Options } from "vue-class-component";
+import moment from "moment";
+
+const DAYS_TO_LOAD = 30;
+
 
 @Options({
   components: {
@@ -84,22 +104,53 @@ export default class AllTransactionsView extends NetFlowVue {
   
   transactions: Transaction[] = [];
   pendingTransactions: Transaction[] = [];
+  searchTerm: any;
+  endDate = new Date();
+  startDate = new Date();
+  pleaseWait = false;
 
   @InjectReactive() isInit!: boolean;
   @Watch("isInit", { immediate: true }) onIsInitChanged() {
     if (this.isInit) {
+      this.resetDates();
       this.loadTransactions();
     }
   }
 
-  async loadTransactions() {
-    const allTxns = await new AccountService().getUserTransactions(this.getAccessToken());
+  resetDates() {
+    this.endDate = new Date();
+    this.startDate = moment().subtract(DAYS_TO_LOAD, "days").toDate();
+  }
+
+  async loadTransactions(append = false) {
+    this.pleaseWait = true;
+    const allTxns = await new AccountService().getUserTransactions(this.getAccessToken(), this.startDate, this.endDate, this.searchTerm??"");
+    this.pleaseWait = false;
 
     const permanentTxns = allTxns.filter(txn=>!txn.pending);
     const pendingTxnThatHavePermTxn = permanentTxns.filter(txn=>txn.pending_transaction_id).map(txn=>txn.pending_transaction_id );
     
-    this.transactions = allTxns.filter(txn => pendingTxnThatHavePermTxn.indexOf(txn.transaction_id) === -1);
-    // this.pendingTransactions = allTxns.filter(txn=>txn.pending && pendingTxnThatHavePermTxn.indexOf(txn.transaction_id)=== -1);
+    const newTxns = allTxns.filter(txn => pendingTxnThatHavePermTxn.indexOf(txn.transaction_id) === -1);
+    if (append) {
+      this.transactions = [...this.transactions, ...newTxns]
+    } else {
+      this.transactions = newTxns;
+    }
+  }
+
+  searchClicked() {
+    this.loadTransactions();
+  }
+
+  loadOlder() {
+    this.endDate = this.startDate
+    this.startDate = moment(this.endDate).subtract(DAYS_TO_LOAD, "days").toDate();
+    this.loadTransactions(true);
   }
 }
 </script>
+<style scoped>
+.spinner {
+  background-color: rgb(16, 185, 129);
+}
+</style>
