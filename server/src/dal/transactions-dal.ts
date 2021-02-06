@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 import { Transaction } from 'plaid';
-import { TransactionWithAccount } from '../../../shared/models/transaction-with-account';
+import { NetflowTransaction } from '../../../shared/models/netflow-transaction';
 import { Formatter } from '../../../shared/utils/formatter';
 import { AccountDal } from './account-dal';
 
@@ -35,37 +35,33 @@ export class TransactionDal {
     })
   }
 
+  async updateMultiple(transactions: Transaction[]) {
+    var arrSize = transactions.length;
+    let chunk:Transaction[];
+    const chunkSize = 50;
 
-  update(transaction: Transaction) {
-    // todo make insert in bulk
-    // var arrSize = entities.length, chunk, chunkSize = 25;
+    let param = new TxnBatchWriteParam();
+    param.RequestItems = {};
 
-    // for (let i = 0; i < arrSize; i += chunkSize) {
-    //   console.log(`Chunk ${i} for table ${tablename}`);
-    //   chunk = entities.slice(i, i + chunkSize);
+    for (let i = 0; i < arrSize; i += chunkSize) {
+      chunk = transactions.slice(i, i + chunkSize);
   
-    //   var params = { RequestItems: {} };
-    //   params.RequestItems[tablename] = chunk.map((entity) => {
-    //     return { PutRequest: { Item: entity } }
-    //   });
-  
-    //   await  docClient.batchWrite(params, function (err, data);
-    // }
+      param.RequestItems[process.env.TAXN_DYNAMODB_TABLE] = chunk.map(txn=> {
+        const requestItem: TxnRequestItem = {PutRequest: {Item: txn}};
+        return requestItem;
+      });
 
-    const params = {
-      TableName: process.env.TAXN_DYNAMODB_TABLE,
-      Item: transaction
-    };
-
-    this.dynamoDb.put(params, (error: any, result: any) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-    });
+      await this.dynamoDb.batchWrite(param, (err:any, data:any) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log(data);
+        }
+      });
+    }
   }
 
-  getAllForUser(userId: string): Promise<TransactionWithAccount[]> {
+  getAllForUser(userId: string): Promise<NetflowTransaction[]> {
 
     // in multi-user environment better to tag transaction with user and index on user/date
 
@@ -94,7 +90,7 @@ export class TransactionDal {
           console.error(err);
           reject(err);
         } else {
-          const results:TransactionWithAccount[] = data.Items.sort((a:TransactionWithAccount, b:TransactionWithAccount)=> {return b.date.localeCompare(a.date);});
+          const results:NetflowTransaction[] = data.Items.sort((a:NetflowTransaction, b:NetflowTransaction)=> {return b.date.localeCompare(a.date);});
           results.forEach(txn=> txn.account_name = allAccounts.find(acct=> acct.account_id === txn.account_id).name);
           resolve(results);
         }
@@ -126,4 +122,17 @@ export class TransactionDal {
       });
     })
   }
+}
+
+class TxnBatchWriteParam {
+  RequestItems: { [tableName: string]: TxnRequestItem[] }; 
+}
+
+class TxnRequestItem {
+  PutRequest?: TxnItem;
+  DeleteRequest?: TxnItem
+}
+
+class TxnItem {
+  Item: Transaction
 }

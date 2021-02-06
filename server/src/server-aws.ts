@@ -1,7 +1,6 @@
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import express from 'express';
-import path from 'path';
 import session from 'express-session';
 import { PlaidRoutes } from './server-plaid';
 import { Routes } from './routes';

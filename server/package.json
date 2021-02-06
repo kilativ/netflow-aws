@@ -13,7 +13,7 @@
     "build-ts": "tsc",
     "claudia-prep": "claudia generate-serverless-express-proxy --express-module dist/server/src/server-aws",
     "claudia-create": "claudia create --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
-    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
+    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json --profile claudia",
     "run-jobs": "ts-node-transpile-only ./src/jobs.ts",
     "run-server-quick": "ts-node-transpile-only ./src/server.ts",
     "serve": "node dist/server/src/server.js",
@@ -25,10 +25,8 @@
     "watch-ts": "tsc -w"
   },
   "dependencies": {
-    "aws-sdk": "^2.804.0",
     "aws-serverless-express": "^3.4.0",
     "body-parser": "^1.19.0",
-    "copy-dynamodb-table": "^2.0.20",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -39,6 +37,8 @@
     "plaid": "^7.1.0"
   },
   "devDependencies": {
+    "aws-sdk": "^2.804.0",
+    "copy-dynamodb-table": "^2.0.20",
     "@types/body-parser": "^1.19.0",
     "@types/cors": "^2.8.7",
     "@types/dotenv": "^8.2.0",

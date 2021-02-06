@@ -5,6 +5,7 @@ import { PlaidDal } from './plaid-dal';
 import { BalanceDto } from '../../shared/models/balance-dto';
 import { Formatter } from '../../shared/utils/formatter';
 import { NetFlowPlaidBankLink } from '../../shared/models/account-dto';
+import { NetflowTransaction } from '../../shared/models/netflow-transaction';
 
 
 export class Transactions {
@@ -40,7 +41,15 @@ export class Transactions {
         console.log(`got ${txnsAndAccounts.accounts.length} accounts and ${txnsAndAccounts.transactions.length} transactions from plaid`);
 
         // don't run it for a lot of transaction until batching is implemented in order not to exceed DynamoDB througput limits
-        txnsAndAccounts.transactions.forEach(txn => this.transactionDal.update(txn));
+        txnsAndAccounts.transactions.forEach(txn => {
+            const netflowTxn = txn as NetflowTransaction;
+            netflowTxn.userId = userId;
+            netflowTxn.search_string = txn.name.toLowerCase();
+        });
+        
+        this.transactionDal.updateMultiple(txnsAndAccounts.transactions);
+
+        // txnsAndAccounts.transactions.forEach(txn => this.transactionDal.update(txn));
         console.log('updated transactions in dynamodb');
 
         const accounts = txnsAndAccounts.accounts;
