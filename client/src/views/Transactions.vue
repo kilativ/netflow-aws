@@ -40,7 +40,7 @@ import { Transaction } from "plaid";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import { Component, InjectReactive, Prop, Watch } from "vue-property-decorator";
 
-import TransactionTable from './TransactionTable.vue';
+import TransactionTable from '../components/TransactionTable.vue';
 import { Options } from "vue-class-component";
 
 @Options({

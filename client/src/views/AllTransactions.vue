@@ -130,7 +130,7 @@ import { AccountService } from "../services/account";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import { InjectReactive, Prop, Watch } from "vue-property-decorator";
 
-import TransactionTable from "./TransactionTable.vue";
+import TransactionTable from "../components/TransactionTable.vue";
 import { Options } from "vue-class-component";
 import dayjs from "dayjs";
 import { NetflowTransaction } from "../../../shared/models/netflow-transaction";

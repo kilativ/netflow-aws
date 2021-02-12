@@ -55,11 +55,10 @@
 </template>
 <script lang="ts">
   import { Transaction } from "plaid";
-  import { NetFlowVue } from "./NetFlowBaseVue";
-
-  import { Prop } from "vue-property-decorator";
+  import { Prop} from "vue-property-decorator";
   import { SortUtils } from "../utils/sort-utils";
   import { NetflowTransaction } from "../../../shared/models/netflow-transaction";
+  import { NetFlowVue } from "../views/NetFlowBaseVue";
 
   export default class TransactionTable extends NetFlowVue {
     @Prop({type: [Array]}) readonly transactions!: Transaction[];

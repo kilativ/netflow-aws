@@ -19,34 +19,8 @@
               </h4>
           </div>
            <div class="lg:p-5">
-              <table class="w-full text-gray-700">
-                  <thead class="lg:table-header-group hidden">
-                      <tr>
-                          <th class="text-blue-900 px-1 text-left">Name</th>
-                          <th class="text-blue-900 px-1 text-left">Number</th>
-                          <th class="text-blue-900 px-1 text-left">Type</th>
-                          <th class="text-blue-900 px-1 text-right">Balance</th>
-                          <th></th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      <tr v-for="account in bank.accounts" :key="account.account_id" class="border-b border-blue-500 mb-3">
-                          <td class="lg:px-1">{{account.official_name ?? account.name}}</td>
-                          <td class="lg:px-1 lg:table-cell hidden">{{ account.mask }}</td>
-                          <td class="lg:px-1 lg:table-cell hidden">{{ account.type }} - {{ account.subtype }}</td>
-                          <td class="lg:px-1 text-right">{{ formatter.currencyUSD(account.balances.current) }}</td>
-                          <td  class="px-1 text-right whitespace-nowrap">
-                            <router-link v-bind:to="`/account/${account.account_id}/transactions/`" class="cursor-pointer underline">
-                              <i class="fas fa-dollar-sign pr-1 lg:pr-3"></i>
-                            </router-link>
-                              <router-link v-bind:to="`/account/${account.account_id}/snapshot`" class="cursor-pointer">
-                              <i class="fas fa-chart-area"></i>
-                              </router-link>
-                          </td>
-                      </tr>
-                  </tbody>
-              </table>
-              </div>
+             <account-table :accounts="bank.accounts"></account-table>
+          </div>
         </div>
       </div>
 
@@ -60,7 +34,15 @@ import { AccountService } from "../services/account";
 import { NetFlowPlaidBankLink, NetFlowUser} from "../../../shared/models/account-dto";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import Swal from 'sweetalert2'
+import {Account} from 'plaid'
+import AccountTable from '../components/AccountTable.vue'
+import { Options } from "vue-class-component";
 
+@Options({
+  components: {
+    AccountTable,
+  },
+})
 export default class AccountView extends NetFlowVue {
   private list: NetFlowPlaidBankLink[] = [];
   private user: NetFlowUser = new NetFlowUser();
@@ -92,6 +74,5 @@ export default class AccountView extends NetFlowVue {
       }
     });
   }
-  
 }
 </script>
