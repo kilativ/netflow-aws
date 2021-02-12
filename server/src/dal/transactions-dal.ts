@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { Transaction, TransactionsResponse } from 'plaid';
 import { NetflowTransaction } from '../../../shared/models/netflow-transaction';
 import { Formatter } from '../../../shared/utils/formatter';
@@ -85,8 +85,8 @@ export class TransactionDal {
         },
         ExpressionAttributeValues : {
         ":kv0":userId,
-        ":kv1": moment(startDate).format('YYYY-MM-DD'),
-        ":kv1p2": moment(endDate).format('YYYY-MM-DD'), 
+        ":kv1": dayjs(startDate).format('YYYY-MM-DD'),
+        ":kv1p2": dayjs(endDate).format('YYYY-MM-DD'), 
         }
       };
 

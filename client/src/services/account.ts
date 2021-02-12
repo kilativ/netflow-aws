@@ -3,7 +3,7 @@ import { Transaction } from "plaid";
 import { NetFlowUser } from '../../../shared/models/account-dto'
 import { SnapshotDto } from '../../../shared/models/snapshot-dto';
 import { NetflowTransaction } from "../../../shared/models/netflow-transaction";
-import moment from "moment";
+import dayjs from "dayjs";
 
 axios.defaults.baseURL = process.env.VUE_APP_BASE_URL ?? "http://localhost:3000";
 
@@ -79,7 +79,7 @@ export class AccountService {
         })
 
 
-        const response = await axios.get(`/s/api/user/transactions?startDate=${moment(startDate).format('YYYY-MM-DD')}&endDate=${moment(endDate).format('YYYY-MM-DD')}&searchTerm=${searchTerm}`, {
+        const response = await axios.get(`/s/api/user/transactions?startDate=${dayjs(startDate).format('YYYY-MM-DD')}&endDate=${dayjs(endDate).format('YYYY-MM-DD')}&searchTerm=${searchTerm}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }

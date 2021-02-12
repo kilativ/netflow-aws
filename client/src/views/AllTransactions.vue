@@ -104,7 +104,7 @@
               >
                 Load older 
               </button>
-              <div class="text-green-700 p-1">Loaded transactions untill {{ moment(startDate).format('MM-DD-YYYY') }}</div>
+              <div class="text-green-700 p-1">Loaded transactions untill {{ dayjs(startDate).format('MM-DD-YYYY') }}</div>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@ import { InjectReactive, Prop, Watch } from "vue-property-decorator";
 
 import TransactionTable from "./TransactionTable.vue";
 import { Options } from "vue-class-component";
-import moment from "moment";
+import dayjs from "dayjs";
 
 const DAYS_TO_LOAD = 30;
 
@@ -138,7 +138,7 @@ export default class AllTransactionsView extends NetFlowVue {
   endDate = new Date();
   startDate = new Date();
   pleaseWait = false;
-  moment = moment;
+  dayjs = dayjs;
 
   @InjectReactive() isInit!: boolean;
   @Watch("isInit", { immediate: true }) onIsInitChanged() {
@@ -150,7 +150,7 @@ export default class AllTransactionsView extends NetFlowVue {
 
   resetDates() {
     this.endDate = new Date();
-    this.startDate = moment().subtract(DAYS_TO_LOAD, "days").toDate();
+    this.startDate = dayjs().subtract(DAYS_TO_LOAD, "days").toDate();
   }
 
   async loadTransactions(append = false) {
@@ -185,7 +185,7 @@ export default class AllTransactionsView extends NetFlowVue {
 
   loadOlder() {
     this.endDate = this.startDate;
-    this.startDate = moment(this.endDate)
+    this.startDate = dayjs(this.endDate)
       .subtract(DAYS_TO_LOAD, "days")
       .toDate();
     this.loadTransactions(true);

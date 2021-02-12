@@ -9,7 +9,7 @@ import { PlaidDal } from './plaid-dal';
 import { Transactions } from './transactions';
 import { BalanceDto } from '../../shared/models/balance-dto';
 import { Formatter } from '../../shared/utils/formatter';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 export class Routes {
   public static Add(app: express.Express) {
@@ -102,7 +102,7 @@ export class Routes {
       , validateUser,
       expressAsyncHandler(async (req: any, res) => {
         let dal = new TransactionDal();
-        let startDate =req.query.startDate? new Date(req.query.startDate): moment().subtract(30, 'days').toDate();
+        let startDate =req.query.startDate? new Date(req.query.startDate): dayjs().subtract(30, 'days').toDate();
         let endDate = req.query.endDate? new Date(req.query.endDate): new Date() ;
 
         let txn = await dal.getAllForUser(req.user, startDate, endDate, req.query.searchTerm);

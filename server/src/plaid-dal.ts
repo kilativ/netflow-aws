@@ -1,4 +1,4 @@
-import moment from 'moment';
+import dayjs from 'dayjs';
 import plaid, { TokenResponse, TransactionsResponse,Institution } from 'plaid';
 
 export class PlaidDal {
@@ -44,8 +44,8 @@ export class PlaidDal {
     
     
     public async fetchTransactions(accessToken: string, numOfDays:number): Promise<TransactionsResponse> {
-        let startDate = moment().subtract(numOfDays, 'days').format('YYYY-MM-DD');
-        let endDate = moment().format('YYYY-MM-DD');
+        let startDate = dayjs().subtract(numOfDays, 'days').format('YYYY-MM-DD');
+        let endDate = dayjs().format('YYYY-MM-DD');
 
         const originalResponse = await this.client.getTransactions(accessToken, startDate, endDate, {});
         let transactions = originalResponse.transactions;

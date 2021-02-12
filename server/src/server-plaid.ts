@@ -1,5 +1,5 @@
 import express from 'express';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import plaid from 'plaid';
 import util from 'util';
 
@@ -202,8 +202,8 @@ export class PlaidRoutes {
     // https://plaid.com/docs/#transactions
     app.get('/api/transactions', function (request, response, next) {
       // Pull transactions for the Item for the last 30 days
-      let startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
-      let endDate = moment().format('YYYY-MM-DD');
+      let startDate = dayjs().subtract(30, 'days').format('YYYY-MM-DD');
+      let endDate = dayjs().format('YYYY-MM-DD');
       client.getTransactions(ACCESS_TOKEN, startDate, endDate, {
         count: 250,
         offset: 0,
@@ -269,8 +269,8 @@ export class PlaidRoutes {
     // Retrieve Investment Transactions for an Item
     // https://plaid.com/docs/#investments
     app.get('/api/investment_transactions', function (request, response, next) {
-      let startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
-      let endDate = moment().format('YYYY-MM-DD');
+      let startDate = dayjs().subtract(30, 'days').format('YYYY-MM-DD');
+      let endDate = dayjs().format('YYYY-MM-DD');
       client.getInvestmentTransactions(ACCESS_TOKEN, startDate, endDate)
         .then(investmentTransactionsResponse => {
           prettyPrintResponse(investmentTransactionsResponse);
