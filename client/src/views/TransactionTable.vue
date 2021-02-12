@@ -3,10 +3,22 @@
   <table class="w-full lg:p-5 text-gray-700 block lg:table">
       <thead class="hidden lg:table-header-group">
           <tr>
-              <th class="text-left text-blue-900 px-1">Date</th>
-              <th class="text-left text-blue-900 px-1">Name</th>
-              <th class="text-right text-blue-900 px-1">Amount</th>
-              <th class="text-blue-900 px-1 text-right">Category</th>
+              <th class="text-left text-blue-900 px-1 cursor-pointer" @click="sortClicked(transactions, 'date')">Date
+                    <i class="fas fa-arrow-up" v-if="sortColumn === 'date' && sortAsc"></i>
+                    <i class="fas fa-arrow-down" v-if="sortColumn === 'date' && !sortAsc"></i>
+                  </th>
+              <th class="text-left text-blue-900 px-1 cursor-pointer" @click="sortClicked(transactions, 'name')">Name
+                    <i class="fas fa-arrow-up" v-if="sortColumn === 'name' && sortAsc"></i>
+                    <i class="fas fa-arrow-down" v-if="sortColumn === 'name' && !sortAsc"></i>
+                  </th>
+              <th class="text-right text-blue-900 px-1 cursor-pointer" @click="sortClicked(transactions, 'amount')">Amount
+                    <i class="fas fa-arrow-up" v-if="sortColumn === 'amount' && sortAsc"></i>
+                    <i class="fas fa-arrow-down" v-if="sortColumn === 'amount' && !sortAsc"></i>
+                  </th>
+              <th class="text-blue-900 px-1 text-right cursor-pointer" @click="sortClicked(transactions, 'category')">Category
+                    <i class="fas fa-arrow-up" v-if="sortColumn === 'category' && sortAsc"></i>
+                    <i class="fas fa-arrow-down" v-if="sortColumn === 'category' && !sortAsc"></i>
+                  </th>
           </tr>
       </thead>
 
@@ -39,14 +51,29 @@
         </tr>
       </tbody>
   </table>
-</div></template>
+</div>
+</template>
 <script lang="ts">
-import { Transaction } from "plaid";
-import { NetFlowVue } from "./NetFlowBaseVue";
+  import { Transaction } from "plaid";
+  import { NetFlowVue } from "./NetFlowBaseVue";
 
-import { Prop } from "vue-property-decorator";
+  import { Prop } from "vue-property-decorator";
+  import { SortUtils } from "../utils/sort-utils";
+  import { NetflowTransaction } from "../../../shared/models/netflow-transaction";
 
-export default class TransactionTable extends NetFlowVue {
-  @Prop({type: [Array]}) readonly transactions!: Transaction[];
-}
+  export default class TransactionTable extends NetFlowVue {
+    @Prop({type: [Array]}) readonly transactions!: Transaction[];
+    sortUtils = new SortUtils();
+    private sortColumn = "date";
+    private sortAsc = false;
+
+    sortClicked(collection: NetflowTransaction[], columName: string) {
+      if (columName === this.sortColumn) {
+        this.sortAsc = !this.sortAsc;
+      } else {
+        this.sortColumn = columName;
+      }
+      this.sortUtils.sortTransactions(collection, this.sortColumn, this.sortAsc);
+    }
+  }
 </script>
