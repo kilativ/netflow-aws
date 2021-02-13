@@ -36,7 +36,7 @@ export class Transactions {
         }
     }
 
-    public async processUserBank(userId: string, bank: NetFlowPlaidBankLink, today: string, numberOfDays = 7) {
+    public async processUserBank(userId: string, bank: NetFlowPlaidBankLink, today: string, numberOfDays = 7): Promise<[number, number]> {
         console.log(`processing user ${userId}, bank ${bank.id}`);
 
         const txnsAndAccounts = await this.plaidDal.fetchTransactions(bank.token, numberOfDays);
@@ -57,5 +57,7 @@ export class Transactions {
             this.balanceDal.update(balance);
         });
         console.log('updated balances object in dynamodb');
+
+        return [txnsAndAccounts.accounts.length, txnsAndAccounts.transactions.length];
     }
 }

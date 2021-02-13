@@ -41,12 +41,13 @@
 </template>
 <script lang="ts">
 
+import axios from "axios";
 import { inject } from "vue";
-import { Vue } from "vue-class-component";
+import Swal from 'sweetalert2'
 import { ProvideReactive, Watch } from "vue-property-decorator";
 import { NetFlowVue } from "./views/NetFlowBaseVue";
 
-export default class App extends Vue {
+export default class App extends NetFlowVue {
     private $gAuth: any;
     protected Vue3GoogleOauth: any = inject("Vue3GoogleOauth");
 
@@ -59,6 +60,26 @@ export default class App extends Vue {
         {name:"Plaid", link:"/plaid", class:" border-gray-800 hover:border-purple-500", icon:"fa-envelope", color:"purple-500"},
         {name:"Google Login", link:"/login", class:"border-gray-800 hover:border-red-500", icon:"fa-wallet", color:"red-500"},
     ]
+    created() {
+        axios.interceptors.response.use(
+            res => res,
+            err => {
+                if(err.response.data) {
+                    Swal.fire({
+                        title: err.response.data.name,
+                        text: err.response.data.error_message,
+                        icon: 'error',
+                        });
+                } else {
+                    Swal.fire({
+                        title: "Generic error",
+                        text: JSON.stringify(err),
+                        icon: 'error',
+                        });
+                }
+            }
+        );
+    }
 
     isCurrentSelection(item: MenuItem): boolean {
         return item.name !== 'Home'? this.$route.path.indexOf(item.link) === 0 : this.$route.path === item.link;

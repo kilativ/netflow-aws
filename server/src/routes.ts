@@ -132,9 +132,14 @@ export class Routes {
           daysToFetch = Math.ceil((new Date().getTime() - new Date(maxBalanceDate).getTime() )/ (1000 * 3600 * 24));
         } 
         const today = Formatter.toISODateString(new Date());
-        await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
+        try {
+          const counts = await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
 
-        res.sendStatus(200);
+          res.send({accountCount: counts[0], transactionCount: counts[1]});
+        } catch (e) {
+          console.log(e);
+          res.status(400).send(e);
+        }
       })
     );
 

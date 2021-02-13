@@ -10,12 +10,6 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_URL ?? "http://localhost:3000"
 export class AccountService {
 
     async addBankAccountToUser(accessToken: string, plaidAccessToken: string) {
-        axios.interceptors.response.use(res => { // todo make this global
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
         const response = await axios.post<string>('/s/api/user/account',
             { public_token: plaidAccessToken }
             , {
@@ -27,12 +21,6 @@ export class AccountService {
     }
 
     async addUserAccount(accessToken: string) {
-        axios.interceptors.response.use(res => { // todo make this global
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
         const response = await axios.post<NetFlowUser>("/s/api/user", null, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -42,12 +30,6 @@ export class AccountService {
     }
 
     async getUserAccount(accessToken: string) {
-        axios.interceptors.response.use(res => { // todo make this global
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
         const response = await axios.get<NetFlowUser>("/s/api/user", {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -57,12 +39,6 @@ export class AccountService {
     }
 
     async getAccountTransactions(accessToken: string, accountId: string): Promise<Transaction[]> {
-        axios.interceptors.response.use(res => { // todo make this global
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
         const response = await axios.get(`/s/api/account/${accountId}/transactions`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -72,13 +48,6 @@ export class AccountService {
     }
 
     async getUserTransactions(accessToken: string, startDate: Date, endDate: Date, searchTerm: string): Promise<NetflowTransaction[]> {
-        axios.interceptors.response.use(res => { // todo make this global
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
-
         const response = await axios.get(`/s/api/user/transactions?startDate=${dayjs(startDate).format('YYYY-MM-DD')}&endDate=${dayjs(endDate).format('YYYY-MM-DD')}&searchTerm=${searchTerm}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
@@ -96,21 +65,14 @@ export class AccountService {
         return response.data;
     }
 
-    async fetchBankTransaction(accessToken: string, bankId: string) {
-        axios.interceptors.response.use(res => { 
-            return res;
-        }, function (error) {
-            console.log(error)
-        })
-
-        const response = await axios.post<string>(`/s/api/bank/${bankId}/fetch-transactions`,
+    async fetchBankTransaction(accessToken: string, bankId: string): Promise<void> {
+        await axios.post<object>(`/s/api/bank/${bankId}/fetch-transactions`,
             {}
             , {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
                 }
             });
-        return response.data;
     }
 
 
