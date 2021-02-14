@@ -2,6 +2,8 @@ import express from 'express';
 import dayjs from 'dayjs';
 import plaid from 'plaid';
 import util from 'util';
+import { AccountDal } from './dal/account-dal';
+import { RouteValidation } from './utils/route-valdiation';
 
 export class PlaidRoutes {
 
@@ -23,6 +25,7 @@ export class PlaidRoutes {
     // We store the payment_id in memory - in production, store it in a secure
     // persistent data store
     let PAYMENT_ID: string = null;
+    let CLIENT_NAME = "netflow";
 
     // Initialize the Plaid client
     // Find your API keys in the Dashboard (https://dashboard.plaid.com/account/keys)
@@ -45,13 +48,13 @@ export class PlaidRoutes {
 
     // Create a link token with configs which we can then use to initialize Plaid Link client-side.
     // See https://plaid.com/docs/#create-link-token
-    app.post('/api/create_link_token', function (request, response, next) {
+      app.post('/api/create_link_token',RouteValidation.validateUser, function (request:any, response, next) {
       const configs = {
         'user': {
           // This should correspond to a unique id for the current user.
-          'client_user_id': 'user-id',
+          'client_user_id': request.user,
         },
-        'client_name': "Plaid Quickstart",
+        'client_name': CLIENT_NAME,
         'products': PLAID_PRODUCTS,
         'country_codes': PLAID_COUNTRY_CODES,
         'language': "en",
@@ -73,6 +76,28 @@ export class PlaidRoutes {
       })
     });
 
+    // Create a one-time use link_token for the Item.
+    // This link_token can be used to initialize Link
+    // in update mode for the user
+    app.post('/api/create_relink_token', RouteValidation.validateUser, async (request:any, response, next) => {
+      let dal = new AccountDal();
+      let userid = request.user as string;
+      let user = await dal.get(userid);
+      const bankFound = user.banks.find(b=>b.id === request.body.bankId);
+      const linkTokenResponse = await client.createLinkToken({
+        user: {
+          client_user_id: userid,
+        },
+        client_name: CLIENT_NAME,
+        country_codes: PLAID_COUNTRY_CODES,
+        language: 'en',
+        // webhook: 'https://webhook.sample.com',
+        access_token: bankFound.token,
+      });
+
+      // Use the link_token to initialize Link
+      response.json({ link_token: linkTokenResponse.link_token });
+    });
     // Create a link token with configs which we can then use to initialize Plaid Link client-side.
     // See https://plaid.com/docs/#payment-initiation-create-link-token-request
     app.post('/api/create_link_token_for_payment', function (request, response, next) {
@@ -104,7 +129,7 @@ export class PlaidRoutes {
                   // This should correspond to a unique id for the current user.
                   'client_user_id': 'user-id',
                 },
-                'client_name': "Plaid Quickstart",
+                'client_name': CLIENT_NAME,
                 'products': PLAID_PRODUCTS,
                 'country_codes': PLAID_COUNTRY_CODES,
                 'language': "en",
@@ -122,7 +147,7 @@ export class PlaidRoutes {
                     // This should correspond to a unique id for the current user.
                     'client_user_id': 'user-id',
                   },
-                  'client_name': "Plaid Quickstart",
+                  'client_name': CLIENT_NAME,
                   'products': PLAID_PRODUCTS,
                   'country_codes': PLAID_COUNTRY_CODES,
                   'language': "en",
