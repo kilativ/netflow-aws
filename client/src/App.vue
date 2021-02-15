@@ -67,7 +67,7 @@ export default class App extends NetFlowVue {
                 if(err.response.data) {
                     Swal.fire({
                         title: err.response.data.name,
-                        text: err.response.data.error_message,
+                        text: err.response.data.error_message??err.response.data,
                         icon: 'error',
                         });
                 } else {

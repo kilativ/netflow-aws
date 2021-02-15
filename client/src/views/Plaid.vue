@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import { Options, Vue } from 'vue-class-component';
-import axios, { AxiosResponse } from "axios";
 import PlaidLink from '../views/PlaidLink.vue';
 import { inject } from 'vue';
 import { AccountService } from '../services/account';
