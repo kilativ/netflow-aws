@@ -5,7 +5,7 @@ import { SnapshotDto } from '../../../shared/models/snapshot-dto';
 import { NetflowTransaction } from "../../../shared/models/netflow-transaction";
 import dayjs from "dayjs";
 
-axios.defaults.baseURL = process.env.VUE_APP_BASE_URL ?? "http://localhost:3000";
+axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 
 export class AccountService {
 
@@ -48,6 +48,10 @@ export class AccountService {
     }
 
     async getUserTransactions(accessToken: string, startDate: Date, endDate: Date, searchTerm: string): Promise<NetflowTransaction[]> {
+        console.log(axios.defaults.baseURL);
+        console.log(process.env.VUE_APP_BASE_URL);
+        console.log(process.env);
+
         const response = await axios.get(`/s/api/user/transactions?startDate=${dayjs(startDate).format('YYYY-MM-DD')}&endDate=${dayjs(endDate).format('YYYY-MM-DD')}&searchTerm=${searchTerm}`, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`

@@ -64,7 +64,7 @@ export default class App extends NetFlowVue {
         axios.interceptors.response.use(
             res => res,
             err => {
-                if(err.response.data) {
+                if(err?.response?.data) {
                     Swal.fire({
                         title: err.response.data.name,
                         text: err.response.data.error_message??err.response.data,
@@ -73,7 +73,7 @@ export default class App extends NetFlowVue {
                 } else {
                     Swal.fire({
                         title: "Generic error",
-                        text: JSON.stringify(err),
+                        text: JSON.stringify(err?.message ? err.message: err),
                         icon: 'error',
                         });
                 }
