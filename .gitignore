@@ -6,3 +6,4 @@ server/out
 /*/*.env
 /server/lambda-env*.json
 /server/claudia*.json
+/server/.env.*

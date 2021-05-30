@@ -5,7 +5,6 @@ import { PlaidDal } from './plaid-dal';
 import { BalanceDto } from '../../shared/models/balance-dto';
 import { Formatter } from '../../shared/utils/formatter';
 import { NetFlowPlaidBankLink } from '../../shared/models/account-dto';
-import { NetflowTransaction } from '../../shared/models/netflow-transaction';
 
 
 export class Transactions {
