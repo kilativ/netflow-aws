@@ -2,6 +2,7 @@ import axios from "axios";
 import { Transaction } from "plaid";
 import { NetFlowUser } from '../../../shared/models/account-dto'
 import { SnapshotDto } from '../../../shared/models/snapshot-dto';
+import {UpdateCounts} from '../../../shared/models/update-counts-dto'
 import { NetflowTransaction } from "../../../shared/models/netflow-transaction";
 import dayjs from "dayjs";
 
@@ -69,14 +70,21 @@ export class AccountService {
         return response.data;
     }
 
-    async fetchBankTransaction(accessToken: string, bankId: string): Promise<void> {
-        await axios.post<object>(`/s/api/bank/${bankId}/fetch-transactions`,
+    async fetchBankTransaction(accessToken: string, bankId: string): Promise<UpdateCounts> {
+        return new Promise((resolve, reject) => {
+            axios.post<object>(`/s/api/bank/${bankId}/fetch-transactions`,
             {}
             , {
                 headers: {
-                    'Authorization': `Bearer ${accessToken}`
+                    'Authorization': `Bearer ${accessToken}`,
+                    'content-type': "application/application.json"
                 }
-            });
+            }).then(response=> resolve(response.data as UpdateCounts)).catch(response => 
+                {
+                    console.error(response);
+                    reject(response);
+                })
+        })
     }
 
 

@@ -5,10 +5,10 @@ import TransactionsView from '../views/Transactions.vue'
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/account'
+    redirect: '/accounts'
   },
   {
-    path: '/account',
+    path: '/accounts',
     name: 'Account',
     component: () => import(/* webpackChunkName: "about" */ '../views/Account.vue')
   },

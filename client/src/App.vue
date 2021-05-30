@@ -54,7 +54,7 @@ export default class App extends NetFlowVue {
     $route: any;
 
     menuItems = [
-        {name:"Accounts", link:"/account", class:"border-gray-800 hover:border-blue-600", icon:"fa-chart-area", color:"blue-600"},
+        {name:"Accounts", link:"/accounts", class:"border-gray-800 hover:border-blue-600", icon:"fa-chart-area", color:"blue-600"},
         {name:"Transactions", link:"/transactions", class:"border-gray-800 hover:border-green-500", icon:"fa-dollar-sign", color:"green-500"},
         {name:"Plaid", link:"/plaid", class:" border-gray-800 hover:border-purple-500", icon:"fa-envelope", color:"purple-500"},
         {name:"Google Login", link:"/login", class:"border-gray-800 hover:border-red-500", icon:"fa-wallet", color:"red-500"},

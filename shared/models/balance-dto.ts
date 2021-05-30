@@ -7,3 +7,4 @@ export class BalanceDto {
     account_id: string;
     date: string;
 }
+

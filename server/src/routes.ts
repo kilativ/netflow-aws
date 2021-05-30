@@ -8,6 +8,7 @@ import { NetFlowUser } from '../../shared/models/account-dto';
 import { PlaidDal } from './plaid-dal';
 import { Transactions } from './transactions';
 import { BalanceDto } from '../../shared/models/balance-dto';
+import {UpdateCounts} from '../../shared/models/update-counts-dto'
 import { Formatter } from '../../shared/utils/formatter';
 import dayjs from 'dayjs';
 
@@ -135,7 +136,11 @@ export class Routes {
         try {
           const counts = await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
 
-          res.send({accountCount: counts[0], transactionCount: counts[1]});
+          var result = new UpdateCounts() ;
+          result.accountCount = counts[0];
+          result.transactionCount = counts[1]
+          
+          res.send(result);
         } catch (e) {
           console.log(e);
           res.status(400).send(e);

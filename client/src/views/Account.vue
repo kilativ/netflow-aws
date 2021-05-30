@@ -34,7 +34,6 @@ import { AccountService } from "../services/account";
 import { NetFlowPlaidBankLink, NetFlowUser} from "../../../shared/models/account-dto";
 import { NetFlowVue } from "./NetFlowBaseVue";
 import Swal from 'sweetalert2'
-import {Account} from 'plaid'
 import AccountTable from '../components/AccountTable.vue'
 import { Options } from "vue-class-component";
 
@@ -70,7 +69,16 @@ export default class AccountView extends NetFlowVue {
       cancelButtonText: 'No'
     }).then(async (result: any) => {
       if (result.isConfirmed) {
-        await new AccountService().fetchBankTransaction(this.getAccessToken(), bankId);
+        new AccountService().fetchBankTransaction(this.getAccessToken(), bankId).then(result => {
+          console.log(result);
+            Swal.fire({
+            text: result.transactionCount + ' transactions and ' + result.accountCount + ' accounts were updated',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'Yes!',
+            });
+            this.loadData();
+        });
       }
     });
   }

@@ -5,3 +5,4 @@ export interface NetflowTransaction extends Transaction {
     userId: string;
     search_string: string;
 }
+
