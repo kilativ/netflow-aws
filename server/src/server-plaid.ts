@@ -52,7 +52,7 @@ export class PlaidRoutes {
       const configs = {
         'user': {
           // This should correspond to a unique id for the current user.
-          'client_user_id': request.user,
+          'client_user_id': this.userIdToClientId(request.user),
         },
         'client_name': CLIENT_NAME,
         'products': PLAID_PRODUCTS,
@@ -84,9 +84,10 @@ export class PlaidRoutes {
       let userid = request.user as string;
       let user = await dal.get(userid);
       const bankFound = user.banks.find(b=>b.id === request.body.bankId);
+      try {
       const linkTokenResponse = await client.createLinkToken({
         user: {
-          client_user_id: userid,
+          client_user_id: this.userIdToClientId(userid),
         },
         client_name: CLIENT_NAME,
         country_codes: PLAID_COUNTRY_CODES,
@@ -94,9 +95,13 @@ export class PlaidRoutes {
         // webhook: 'https://webhook.sample.com',
         access_token: bankFound.token,
       });
+      response.json({ link_token: linkTokenResponse.link_token });
+    } catch(e) {
+      response.status(500);
+      response.send(e);
+    }
 
       // Use the link_token to initialize Link
-      response.json({ link_token: linkTokenResponse.link_token });
     });
     // Create a link token with configs which we can then use to initialize Plaid Link client-side.
     // See https://plaid.com/docs/#payment-initiation-create-link-token-request
@@ -458,5 +463,8 @@ export class PlaidRoutes {
         }
       );
     };
+  }
+  static userIdToClientId(userid: string): string {
+   return userid.replace("@", "_at_").replace(".", "_dot_");
   }
 }
