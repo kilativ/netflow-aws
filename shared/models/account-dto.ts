@@ -13,6 +13,8 @@ export class NetFlowUserSettings{
 
 export class AccountSnapshotSettings {
     account_id!: string;
+    account_nickname!: string;
+    account_order!: number;
     scheduledTransactions!:  AccountSnapshotScheduledTransactionsSettings[];
 }
 

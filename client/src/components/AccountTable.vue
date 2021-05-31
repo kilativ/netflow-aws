@@ -49,15 +49,22 @@
     readonly accounts!: Account[];
 
     sortUtils = new SortUtils();
-    private sortColumn = "type";
+    private customSort = false;
+    private sortColumn = "none";
     private sortAsc = true;
     $router: any;
 
     @Watch("accounts", { immediate: true }) onIsInitChanged() {
-      this.sortUtils.sortAccounts(this.accounts, this.sortColumn, this.sortAsc);
+      if (this.customSort) {
+        this.sortUtils.sortAccounts(this.accounts, this.sortColumn, this.sortAsc);
+      }
     }
 
     sortClicked(collection: Account[], columName: string) {
+      if (!this.customSort)  {
+        this.customSort = true;
+        this.sortColumn = "type";
+      }
       if (columName === this.sortColumn) {
         this.sortAsc = !this.sortAsc;
       } else {

@@ -4,13 +4,14 @@ import { AccountDal } from './dal/account-dal';
 import { TransactionDal } from './dal/transactions-dal';
 import { SnapshotCalculator } from './snapshot-calculator';
 import { OAuth2Client } from 'google-auth-library';
-import { NetFlowUser } from '../../shared/models/account-dto';
+import { AccountSnapshotSettings, NetFlowUser } from '../../shared/models/account-dto';
 import { PlaidDal } from './plaid-dal';
 import { Transactions } from './transactions';
 import { BalanceDto } from '../../shared/models/balance-dto';
 import {UpdateCounts} from '../../shared/models/update-counts-dto'
 import { Formatter } from '../../shared/utils/formatter';
 import dayjs from 'dayjs';
+import { access } from 'fs';
 
 export class Routes {
   public static Add(app: express.Express) {
@@ -66,7 +67,8 @@ export class Routes {
       , validateUser,
       expressAsyncHandler(async (req: any, res) => {
         let dal = new AccountDal();
-        let data = await dal.get(req.user as string)
+        let data = await dal.get(req.user as string);
+        this.updateNicknamesAndOrder(data);
         res.send(data);
       })
     );
@@ -158,4 +160,29 @@ export class Routes {
       })
     );
   }
+  static updateNicknamesAndOrder(data: NetFlowUser) {
+    let idToSettingHash: IHash = {};
+    data.settings.accountSnapshots.forEach(as=> {idToSettingHash[as.account_id] = as;} );
+    data.banks.forEach(b=>
+      {
+        // reorder accounts
+        const temp2 =b.accounts
+        .map(a=> ({account: a, order:  idToSettingHash[a.account_id]?  idToSettingHash[a.account_id].account_order: 9999}));
+
+        b.accounts = temp2
+        .sort(o=>o.order).map(o=>o.account);
+
+        // update nicknames
+        b.accounts.forEach(acct=> {
+          const accountSettings = idToSettingHash[acct.account_id];
+          if (accountSettings) {
+            acct.official_name = accountSettings.account_nickname;
+          }
+        })
+      })
+  }
 }
+
+export interface IHash {
+  [details: string] : AccountSnapshotSettings;
+} 
