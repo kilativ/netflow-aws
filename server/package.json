@@ -12,8 +12,8 @@
     "build": "npm run build-ts",
     "build-ts": "tsc",
     "claudia-prep": "claudia generate-serverless-express-proxy --express-module dist/server/src/server-aws",
-    "claudia-create": "claudia create --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json",
-    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json --profile claudia",
+    "claudia-create": "claudia create --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json --profile claudia --no-optional-dependencies --name lambda-name-server",
+    "claudia-update": "claudia update --handler dist/server/src/lambda.handler --deploy-proxy-api --region us-east-1 --set-env-from-json lambda-env.json --profile claudia --no-optional-dependencies --config claudia-netflow.json",
     "run-jobs": "ts-node-transpile-only ./src/jobs.ts",
     "run-server-quick": "ts-node-transpile-only ./src/server.ts",
     "serve": "node dist/server/src/server.js",
@@ -45,7 +45,6 @@
     "@types/node": "^14.11.2",
     "@types/shelljs": "^0.8.8",
     "@types/uuid": "^8.3.0",
-    "aws-sdk": "^2.804.0",
     "concurrently": "^5.3.0",
     "copy-dynamodb-table": "^2.0.20",
     "nodemon": "^2.0.4",
@@ -55,5 +54,8 @@
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-node-externals": "^2.5.2"
+  },
+  "optionalDependencies": {
+    "aws-sdk": "^2.922.0"
   }
 }
