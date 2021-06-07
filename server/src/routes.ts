@@ -167,10 +167,11 @@ export class Routes {
       {
         // reorder accounts
         const temp2 =b.accounts
-        .map(a=> ({account: a, order:  idToSettingHash[a.account_id]?  idToSettingHash[a.account_id].account_order: 9999}));
-
-        b.accounts = temp2
-        .sort(o=>o.order).map(o=>o.account);
+        .sort(function(a, b) {
+          var aOrder = idToSettingHash[a.account_id]?  idToSettingHash[a.account_id].account_order: 9999;
+          var bOrder = idToSettingHash[b.account_id]?  idToSettingHash[b.account_id].account_order: 9999;
+          return aOrder -bOrder;
+        })
 
         // update nicknames
         b.accounts.forEach(acct=> {
