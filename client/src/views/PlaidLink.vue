@@ -29,7 +29,7 @@ import { NetFlowVue } from "./NetFlowBaseVue";
 import { AccountService } from "../services/account";
 import { NetFlowPlaidBankLink } from "../../../shared/models/account-dto";
 
-axios.defaults.baseURL = "http://localhost:3000";
+// axios.defaults.baseURL = "http://localhost:3000";
 
 declare global {
   interface Window {
@@ -99,6 +99,7 @@ export default class PlaidLink extends NetFlowVue {
 
   onScriptLoaded() {
     console.log("script loaded");
+    axios.defaults.baseURL = new AccountService().getBaseUrl();
   }
 
   @Emit("event")

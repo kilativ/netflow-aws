@@ -10,6 +10,10 @@ axios.defaults.baseURL = process.env.VUE_APP_BASE_URL;
 
 export class AccountService {
 
+    getBaseUrl(){
+        return process.env.VUE_APP_BASE_URL;
+    }
+
     async addBankAccountToUser(accessToken: string, plaidAccessToken: string) {
         const response = await axios.post<string>('/s/api/user/account',
             { public_token: plaidAccessToken }
