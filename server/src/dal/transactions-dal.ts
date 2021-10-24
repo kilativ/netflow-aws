@@ -23,7 +23,7 @@ export class TransactionDal {
         }
       };
 
-      // todo check if alld ata was returned
+      // todo check if all data was returned
       this.dynamoDb.query(params, function (err: any, data: any) {
         if (err) {
           console.error(err);

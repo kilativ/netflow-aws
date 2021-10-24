@@ -11,7 +11,6 @@ import { BalanceDto } from '../../shared/models/balance-dto';
 import {UpdateCounts} from '../../shared/models/update-counts-dto'
 import { Formatter } from '../../shared/utils/formatter';
 import dayjs from 'dayjs';
-import { access } from 'fs';
 
 export class Routes {
   public static Add(app: express.Express) {
@@ -136,11 +135,11 @@ export class Routes {
         } 
         const today = Formatter.toISODateString(new Date());
         try {
-          const counts = await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
+          const txnAndAccounts = await new Transactions(new AccountDal()).processUserBank(req.user, bank, today, daysToFetch);
 
           var result = new UpdateCounts() ;
-          result.accountCount = counts[0];
-          result.transactionCount = counts[1]
+          result.accountCount = txnAndAccounts[0].length;
+          result.transactionCount = txnAndAccounts[1].length;
           
           res.send(result);
         } catch (e) {
