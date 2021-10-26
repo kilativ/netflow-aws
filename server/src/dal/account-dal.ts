@@ -122,20 +122,14 @@ export class AccountDal {
   }
 
 
-  getAll(): Promise<NetFlowUser[]> {
-    return new Promise((resolve, reject) => {
+  async getAll(): Promise<NetFlowUser[]> {
+  
       const params = {
         TableName: process.env.ACCT_DYNAMODB_TABLE,
       };
 
-      this.dynamoDb.scan(params, function (err: any, data: any) {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data.Items);
-        }
-      });
-    })
+      let data = await this.dynamoDb.scan(params).promise();
+      return data.Items;
   }
 
   get(userId: string): Promise<NetFlowUser> {

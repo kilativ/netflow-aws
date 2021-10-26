@@ -26,27 +26,26 @@ export class Jobs {
             })
     }
 
-    getDailyTransactions(numOfDays: number) {
-        new Transactions(new AccountDal()).saveToDb(numOfDays).then(results=> {
-            
-            for (var userId in results) {
-                let emailBody = "<h2>Daily Transactions</h2>";
-                let txnAndErrors = results[userId];
-        
-                for(var bankName in txnAndErrors) {
-                    let currentBank = txnAndErrors[bankName];
-                    if (Array.isArray(currentBank)){
-                        let txns: Transaction[] = currentBank;
-                        emailBody += `<h3>${bankName}</h3>${this.txnsToHtml(txns)}`;
-                    } else {
-                        let error: PlaidError = currentBank;
-                        emailBody += `<h3>${bankName}</h3>${error.error_message}`;
-                    }
-                }
+    async getDailyTransactions(numOfDays: number):Promise<void> {
+        let results = await new Transactions(new AccountDal()).saveToDb(numOfDays);
 
-                this.sendEmail(userId, "Daily Transactions", emailBody);
+        for (var userId in results) {
+            let emailBody = "<h2>Daily Transactions</h2>";
+            let txnAndErrors = results[userId];
+    
+            for(var bankName in txnAndErrors) {
+                let currentBank = txnAndErrors[bankName];
+                if (Array.isArray(currentBank)){
+                    let txns: Transaction[] = currentBank;
+                    emailBody += `<h3>${bankName}</h3>${this.txnsToHtml(txns)}`;
+                } else {
+                    let error: PlaidError = currentBank;
+                    emailBody += `<h3>${bankName}</h3>${error.error_message}`;
+                }
             }
-        });
+
+            await this.sendEmail(userId, "Daily Transactions", emailBody);
+        }
     }
 
     txnsToHtml(txns: Transaction[]) : string {
@@ -84,12 +83,14 @@ export class Jobs {
 dotenv.config();
 var aws = require("aws-sdk");
 var ses = new aws.SES({ region: process.env.AWS_REGION });
-new Jobs().getDailyTransactions(7);
-
-// new Jobs().copyDynamoDbTables();
 
 export const handler = async (event: any = {}): Promise<any> => {
     dotenv.config();
     await new Jobs().getDailyTransactions(7);
     return "All Good";
 }
+
+// (async () => {
+//     const result = await handler({ foo: 'bar' });
+//     console.log(result);
+// })();

@@ -44,7 +44,8 @@
     "body-parser",
     "express",
     "express-session",
-    "express-async-handler"
+    "express-async-handler",
+    "uuid"
   ],
   "devDependencies": {
     "@types/aws-lambda": "^8.10.77",
